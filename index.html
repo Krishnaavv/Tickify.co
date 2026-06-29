@@ -1,0 +1,4146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIckify.co | Curated Live Event Tickets</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bms-crimson: #FF758F;
+            --bms-crimson-dark: #FF4D6D;
+            --bms-header-dark: #FFCCD5;
+            --bms-sub-nav: #FFF0F3;
+            --bms-bg-light: #FFF5F6;
+            --bms-text-dark: #2B2D42;
+            --bms-text-muted: #8D99AE;
+            --bms-border: #FFE5EC;
+            --font-main: 'Inter', sans-serif;
+            --font-heading: 'Playfair Display', serif;
+            --font-mono: 'Space Grotesk', sans-serif;
+
+            --color-open: #4E9F3D;
+            --color-reserved: #FF9F1C;
+            --color-confirmed: #D8E2DC;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bms-bg-light);
+            color: var(--bms-text-dark);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* TIckify.co Header */
+        header {
+            background-color: var(--bms-header-dark);
+            color: var(--bms-text-dark);
+            padding: 14px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--bms-border);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .header-search {
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 40px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid var(--bms-border);
+            padding: 11px 15px 11px 40px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 14px;
+            color: var(--bms-text-dark);
+            transition: all 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--bms-crimson);
+            box-shadow: 0 0 8px rgba(255, 117, 143, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 13px;
+            color: var(--bms-text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            position: relative;
+        }
+
+        .city-selector {
+            background: none;
+            border: none;
+            color: var(--bms-text-dark);
+            font-family: var(--font-main);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* City picker dropdown list */
+        .city-dropdown-list {
+            display: none;
+            position: absolute;
+            top: 40px;
+            left: -10px;
+            background-color: #ffffff;
+            border: 1px solid var(--bms-border);
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(255, 117, 143, 0.1);
+            z-index: 1000;
+            width: 130px;
+            list-style: none;
+            overflow: hidden;
+        }
+
+        .city-dropdown-list li {
+            padding: 12px 18px;
+            color: var(--bms-text-dark);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .city-dropdown-list li:hover {
+            background-color: var(--bms-sub-nav);
+            color: var(--bms-crimson-dark);
+        }
+
+        .btn-signin {
+            background-color: var(--bms-crimson);
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 117, 143, 0.2);
+        }
+
+        .btn-signin:hover {
+            background-color: var(--bms-crimson-dark);
+            transform: translateY(-1px);
+        }
+
+        /* TIckify.co Sub Navigation */
+        .sub-nav {
+            background-color: var(--bms-sub-nav);
+            color: var(--bms-text-dark);
+            padding: 12px 8%;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--bms-border);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--bms-text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--bms-crimson-dark);
+            font-weight: 700;
+        }
+
+        .nav-links-right {
+            display: flex;
+            gap: 20px;
+            font-size: 12px;
+        }
+
+        .nav-links-right a {
+            color: var(--bms-text-muted);
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nav-links-right a:hover {
+            color: var(--bms-crimson-dark);
+        }
+
+        /* Main Workspace */
+        main {
+            flex-grow: 1;
+            max-width: 1300px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--bms-text-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Pinterest-Aesthetic Grid & Cards */
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--bms-text-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .event-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(255, 117, 143, 0.04);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            cursor: pointer;
+            border: 1px solid var(--bms-border);
+            position: relative;
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 12px 30px rgba(255, 117, 143, 0.12);
+        }
+
+        .event-img {
+            height: 210px;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            transition: transform 0.5s ease;
+        }
+
+        .event-tag {
+            position: absolute;
+            bottom: 12px;
+            left: 12px;
+            background-color: rgba(255, 117, 143, 0.9);
+            color: #ffffff;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(255, 117, 143, 0.25);
+        }
+
+        /* Heart badge (Girly Pinterest element) */
+        .card-heart {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            color: var(--bms-text-muted);
+            transition: all 0.2s;
+            z-index: 5;
+        }
+
+        .card-heart:hover {
+            color: var(--bms-crimson-dark);
+            transform: scale(1.1);
+        }
+
+        .event-info {
+            padding: 20px;
+        }
+
+        .event-title {
+            font-family: var(--font-heading);
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--bms-text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .event-desc {
+            font-size: 13px;
+            color: var(--bms-text-muted);
+            line-height: 1.5;
+            margin-bottom: 12px;
+            height: 38px;
+            overflow: hidden;
+        }
+
+        .event-meta {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--bms-crimson-dark);
+            font-weight: 700;
+        }
+
+        /* Showtime/Venue Selection View */
+        .showtime-container {
+            display: none;
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--bms-border);
+            animation: fadeIn 0.4s ease;
+        }
+
+        .back-btn {
+            background: none;
+            border: 1px solid var(--bms-crimson);
+            color: var(--bms-crimson);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background-color: rgba(248, 68, 100, 0.05);
+        }
+
+        .event-summary-banner {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid var(--bms-border);
+            padding-bottom: 25px;
+        }
+
+        .event-summary-img {
+            width: 150px;
+            height: 100px;
+            border-radius: 8px;
+            background-size: cover;
+            background-position: center;
+            border: 1px solid var(--bms-border);
+        }
+
+        .event-summary-details h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--bms-text-dark);
+            margin-bottom: 8px;
+        }
+
+        .event-summary-details p {
+            font-size: 14px;
+            color: var(--bms-text-muted);
+        }
+
+        /* Showtime Date Selector */
+        .date-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .date-tab {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 70px;
+            height: 70px;
+            border-radius: 8px;
+            border: 1px solid var(--bms-border);
+            background-color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .date-tab:hover {
+            border-color: var(--bms-crimson);
+            color: var(--bms-crimson);
+        }
+
+        .date-tab.active {
+            background-color: var(--bms-crimson);
+            border-color: var(--bms-crimson);
+            color: #ffffff;
+        }
+
+        .date-day {
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .date-num {
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        /* Showtime Venue list */
+        .venue-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .venue-row {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            padding: 20px;
+            border: 1px solid var(--bms-border);
+            border-radius: 10px;
+            background-color: #fafafa;
+            align-items: center;
+        }
+
+        .venue-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .venue-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--bms-text-dark);
+        }
+
+        .venue-location {
+            font-size: 12px;
+            color: var(--bms-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .showtime-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .showtime-pill {
+            background-color: #ffffff;
+            border: 1px solid var(--bms-border);
+            color: #4caf50; /* BMS showtime text is green */
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .showtime-pill:hover {
+            background-color: rgba(76, 175, 80, 0.05);
+            border-color: #4caf50;
+            transform: translateY(-2px);
+        }
+
+        /* Seating Chart View */
+        .booking-workspace {
+            display: none;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 35px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .card-panel {
+            background: #ffffff;
+            border: 1px solid var(--bms-border);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+            position: relative;
+        }
+
+        /* Seating Screen Curve styling */
+        .screen-container {
+            width: 75%;
+            margin: 0 auto 50px;
+            text-align: center;
+            position: relative;
+        }
+
+        .screen-curve {
+            height: 14px;
+            border: 3px solid var(--bms-crimson);
+            border-color: var(--bms-crimson) transparent transparent transparent;
+            border-radius: 50%/20px 20px 0 0;
+            filter: drop-shadow(0px -4px 6px rgba(248, 68, 100, 0.5));
+            margin-bottom: 8px;
+        }
+
+        .screen-label {
+            font-size: 11px;
+            color: var(--bms-text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Seat Grid headers separating categories */
+        .seating-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .tier-header {
+            width: 100%;
+            text-align: left;
+            font-size: 12px;
+            color: var(--bms-text-muted);
+            font-weight: 700;
+            border-bottom: 1px solid var(--bms-border);
+            padding-bottom: 6px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .seat-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .row-label {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            width: 25px;
+            color: var(--bms-text-muted);
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .seat {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-family: var(--font-mono);
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+            border: 1px solid var(--color-open);
+            background-color: #ffffff;
+            color: var(--color-open);
+        }
+
+        /* Seat States */
+        .seat.OPEN:hover {
+            background-color: var(--color-open);
+            color: #ffffff;
+            transform: scale(1.1);
+        }
+
+        .seat.RESERVED {
+            background-color: rgba(255, 152, 0, 0.15);
+            border-color: var(--color-reserved);
+            color: var(--color-reserved);
+            cursor: not-allowed;
+            animation: pulse-reserved 1.5s infinite;
+        }
+
+        @keyframes pulse-reserved {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .seat.CONFIRMED {
+            background-color: rgba(158, 158, 158, 0.2);
+            border-color: var(--color-confirmed);
+            color: var(--color-confirmed);
+            cursor: not-allowed;
+        }
+
+        .seat.selected {
+            background-color: var(--bms-crimson) !important;
+            border-color: var(--bms-crimson) !important;
+            color: #ffffff !important;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(248, 68, 100, 0.4);
+        }
+
+        /* Seating Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid var(--bms-border);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .legend-color {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        /* Bottom Booking Action Bar (BMS Style) */
+        .bottom-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 1px solid var(--bms-border);
+            padding: 15px 8%;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 99;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .action-bar-left {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .action-bar-seats {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--bms-text-dark);
+        }
+
+        .action-bar-total {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--bms-crimson);
+        }
+
+        .btn-book-action {
+            background-color: var(--bms-crimson);
+            color: #ffffff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-book-action:hover:not(:disabled) {
+            background-color: var(--bms-crimson-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-book-action:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* Side Info & Logs Panel */
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background-color: #fafafa;
+            border: 1px solid var(--bms-border);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: var(--font-mono);
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bms-crimson);
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: var(--bms-text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        /* Saga Monitor logs */
+        .saga-monitor {
+            background-color: #1e1e24;
+            border: 1px solid #2e2e38;
+            border-radius: 10px;
+            padding: 15px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            height: 180px;
+            overflow-y: auto;
+            color: #4ef2d2;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .monitor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(78, 242, 210, 0.2);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            color: #4ef2d2;
+            font-weight: 700;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .log-time {
+            color: #6c757d;
+            margin-right: 6px;
+        }
+
+        .log-success { color: #52b788; }
+        .log-warning { color: #f9c74f; }
+        .log-error { color: #f94144; }
+        .log-system { color: #a2d2ff; }
+
+        /* BMS Developer Promo & Concurrency Console */
+        .developer-promo-panel {
+            background: linear-gradient(135deg, #ffffff 0%, #fff5f6 100%);
+            border: 1px dashed var(--bms-crimson);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .developer-promo-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--bms-crimson-dark);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+        }
+
+        .developer-checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .developer-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .developer-checkbox input {
+            margin-top: 2px;
+            cursor: pointer;
+        }
+
+        /* Detailed Checkout Drawer */
+        .checkout-drawer {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 420px;
+            height: 100%;
+            background-color: #ffffff;
+            box-shadow: -10px 0 35px rgba(255, 117, 143, 0.1);
+            z-index: 1000;
+            flex-direction: column;
+            animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-left: 1px solid var(--bms-border);
+            border-radius: 24px 0 0 24px;
+        }
+
+        @keyframes slideLeft {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .drawer-header {
+            background-color: var(--bms-header-dark);
+            color: var(--bms-text-dark);
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h3 {
+            font-family: var(--font-heading);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .drawer-close {
+            background: none;
+            border: none;
+            color: var(--bms-text-dark);
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .drawer-close:hover {
+            transform: scale(1.1);
+        }
+
+        .drawer-body {
+            padding: 25px;
+            flex-grow: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .drawer-event-title {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--bms-text-dark);
+        }
+
+        .drawer-event-meta {
+            font-size: 13px;
+            color: var(--bms-text-muted);
+            margin-top: 4px;
+        }
+
+        .price-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border-top: 1px solid var(--bms-border);
+            border-bottom: 1px solid var(--bms-border);
+            padding: 15px 0;
+            margin: 15px 0;
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: var(--bms-text-dark);
+        }
+
+        .breakdown-row.total-payable {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--bms-crimson-dark);
+            padding-top: 12px;
+            border-top: 1px dashed var(--bms-border);
+        }
+
+        .book-smile-card {
+            background-color: rgba(255, 117, 143, 0.03);
+            border: 1px solid rgba(255, 117, 143, 0.15);
+            border-radius: 12px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            font-size: 11px;
+            align-items: flex-start;
+            cursor: pointer;
+        }
+
+        .checkout-form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--bms-border);
+            border-radius: 10px;
+            font-family: var(--font-main);
+            font-size: 14px;
+            margin-top: 6px;
+            color: var(--bms-text-dark);
+            transition: border-color 0.2s;
+        }
+
+        .checkout-form-input:focus {
+            border-color: var(--bms-crimson);
+            outline: none;
+        }
+
+        .btn-proceed-pay {
+            background-color: var(--bms-crimson);
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: var(--font-main);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(248, 68, 100, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-proceed-pay:hover:not(:disabled) {
+            background-color: var(--bms-crimson-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-proceed-pay:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* Combined Ticket Confirmation Modal */
+        .ticket-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ticket-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            width: 440px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+            border: 2px solid var(--bms-crimson);
+        }
+
+        .ticket-card::before, .ticket-card::after {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background-color: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            top: 55%;
+        }
+
+        .ticket-card::before { left: -13px; border-right: 1px solid var(--bms-crimson); }
+        .ticket-card::after { right: -13px; border-left: 1px solid var(--bms-crimson); }
+
+        .ticket-header {
+            background-color: #fcfcfc;
+            padding: 25px;
+            border-bottom: 1px dashed var(--bms-border);
+            text-align: center;
+        }
+
+        .ticket-body {
+            padding: 25px;
+        }
+
+        .ticket-close {
+            background-color: var(--bms-crimson);
+            color: #ffffff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .ticket-close:hover {
+            background-color: var(--bms-crimson-dark);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* TIckify.co Sign In Overlay */
+        .signin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FFF0F3 0%, #FFCCD5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2500;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .signin-card {
+            background-color: #ffffff;
+            border-radius: 24px;
+            padding: 40px;
+            width: 420px;
+            box-shadow: 0 15px 40px rgba(255, 117, 143, 0.25);
+            border: 2px solid var(--bms-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--bms-text-dark);
+        }
+
+        .input-group input {
+            padding: 14px 18px;
+            border: 2px solid var(--bms-border);
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 14px;
+            color: var(--bms-text-dark);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--bms-crimson-dark);
+            box-shadow: 0 0 10px rgba(255, 117, 143, 0.15);
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .avatar-option {
+            border: 2px solid transparent;
+            border-radius: 16px;
+            padding: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bms-bg-light);
+        }
+
+        .avatar-option:hover {
+            transform: scale(1.08);
+            border-color: var(--bms-border);
+        }
+
+        .avatar-option.selected {
+            border-color: var(--bms-crimson-dark);
+            background-color: var(--bms-sub-nav);
+            box-shadow: 0 4px 12px rgba(255, 117, 143, 0.2);
+        }
+
+        .btn-signin-submit {
+            background-color: var(--bms-crimson-dark);
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 117, 143, 0.35);
+            margin-top: 10px;
+        }
+
+        .btn-signin-submit:hover {
+            background-color: #ff3355;
+            transform: translateY(-2px);
+        }
+
+        /* Sparkle Mouse Trail */
+        .mouse-sparkle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            animation: sparkleFloat 0.8s forwards cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 1;
+        }
+
+        @keyframes sparkleFloat {
+            100% {
+                transform: translate(calc(-50% + var(--dest-x)), calc(-50% + var(--dest-y))) scale(0.2) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        /* Profile Layout & Menu Styling */
+        .profile-dropdown {
+            display: none;
+            position: absolute;
+            top: 48px;
+            right: 0;
+            background-color: #ffffff;
+            border: 1px solid var(--bms-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(255, 117, 143, 0.12);
+            width: 190px;
+            z-index: 1000;
+            overflow: hidden;
+            animation: fadeIn 0.25s ease;
+        }
+        .profile-dropdown .dropdown-header {
+            padding: 12px 16px;
+            background-color: var(--bms-sub-nav);
+            border-bottom: 1px solid var(--bms-border);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--bms-crimson-dark);
+            text-align: center;
+        }
+        .profile-dropdown .dropdown-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .profile-dropdown .dropdown-links li {
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--bms-text-dark);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .profile-dropdown .dropdown-links li:hover {
+            background-color: var(--bms-sub-nav);
+            color: var(--bms-crimson-dark);
+        }
+        .profile-dropdown .dropdown-links li svg {
+            color: var(--bms-text-muted);
+            transition: color 0.2s;
+        }
+        .profile-dropdown .dropdown-links li:hover svg {
+            color: var(--bms-crimson-dark);
+        }
+        .profile-dropdown .dropdown-divider {
+            height: 1px;
+            background-color: var(--bms-border);
+            padding: 0 !important;
+            margin: 0;
+            cursor: default !important;
+        }
+        .profile-container {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .profile-card-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        @media (max-width: 900px) {
+            .profile-card-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        .profile-left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .profile-info-card {
+            background-color: #ffffff;
+            border-radius: 20px;
+            border: 1px solid var(--bms-border);
+            box-shadow: 0 4px 20px rgba(255, 117, 143, 0.04);
+            overflow: hidden;
+            position: relative;
+        }
+        .profile-cover-banner {
+            height: 100px;
+            background: linear-gradient(135deg, #FFCCD5 0%, #FF758F 100%);
+            width: 100%;
+        }
+        .profile-avatar-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: -45px;
+            position: relative;
+            z-index: 10;
+        }
+        .profile-page-avatar-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(255, 117, 143, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .profile-page-avatar-container svg {
+            width: 100%;
+            height: 100%;
+        }
+        .profile-details-content {
+            padding: 20px 25px 25px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-username-heading {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--bms-text-dark);
+            margin-bottom: 4px;
+        }
+        .profile-user-badge {
+            background-color: var(--bms-sub-nav);
+            color: var(--bms-crimson-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid var(--bms-border);
+            margin-bottom: 12px;
+        }
+        .profile-bio-text {
+            font-size: 13px;
+            color: var(--bms-text-muted);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        .profile-meta-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            border-top: 1px solid var(--bms-border);
+            border-bottom: 1px solid var(--bms-border);
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        .meta-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--bms-text-dark);
+            font-weight: 600;
+        }
+        .meta-badge svg {
+            color: var(--bms-crimson);
+        }
+        .btn-edit-profile {
+            background: none;
+            border: 1.5px solid var(--bms-crimson);
+            color: var(--bms-crimson);
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn-edit-profile:hover {
+            background-color: var(--bms-sub-nav);
+            border-color: var(--bms-crimson-dark);
+            color: var(--bms-crimson-dark);
+        }
+        .edit-profile-card {
+            padding: 25px;
+        }
+        .bookings-board-card {
+            background-color: #ffffff;
+            border-radius: 24px;
+            border: 1px solid var(--bms-border);
+            box-shadow: 0 4px 20px rgba(255, 117, 143, 0.04);
+            padding: 30px;
+            min-height: 450px;
+        }
+        .bookings-board-title {
+            font-family: var(--font-heading);
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--bms-text-dark);
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--bms-border);
+            padding-bottom: 10px;
+        }
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+            gap: 20px;
+        }
+        .booking-history-card {
+            background-color: #ffffff;
+            border: 1px solid var(--bms-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .booking-history-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 15px rgba(255, 117, 143, 0.08);
+        }
+        .booking-card-image {
+            height: 110px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+        .booking-card-tag {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background-color: rgba(255, 117, 143, 0.9);
+            color: #ffffff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .booking-card-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 8px;
+        }
+        .booking-card-title {
+            font-family: var(--font-heading);
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--bms-text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .booking-card-meta {
+            font-size: 11px;
+            color: var(--bms-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .booking-card-seats {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--bms-crimson-dark);
+            background-color: var(--bms-sub-nav);
+            padding: 4px 8px;
+            border-radius: 6px;
+            display: inline-block;
+            align-self: flex-start;
+        }
+        .booking-card-footer {
+            border-top: 1px dashed var(--bms-border);
+            padding-top: 10px;
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .booking-card-price {
+            font-family: var(--font-mono);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--bms-text-dark);
+        }
+        .btn-view-receipt {
+            background-color: var(--bms-crimson);
+            color: #ffffff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-view-receipt:hover {
+            background-color: var(--bms-crimson-dark);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- HIGH FIDELITY RESPONSIVE MEDIA QUERIES --- */
+
+        /* Tablets and smaller screens */
+        @media (max-width: 992px) {
+            header {
+                padding: 12px 5%;
+            }
+            .sub-nav {
+                padding: 10px 5%;
+            }
+            main {
+                margin: 20px auto;
+                padding: 0 15px;
+            }
+        }
+
+        /* Mobile Devices (max-width: 768px) */
+        @media (max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                padding: 12px 15px;
+                gap: 10px;
+            }
+            .header-search {
+                order: 2;
+                width: 100%;
+                margin: 5px 0 0 0;
+                max-width: none;
+            }
+            .header-right {
+                gap: 15px;
+            }
+            .sub-nav {
+                padding: 8px 15px;
+            }
+            .nav-links-right {
+                display: none !important; /* Hide secondary desktop links on mobile */
+            }
+            .nav-links {
+                overflow-x: auto;
+                white-space: nowrap;
+                width: 100%;
+                padding-bottom: 5px;
+                gap: 15px;
+                -webkit-overflow-scrolling: touch;
+            }
+            .nav-links a {
+                flex: 0 0 auto;
+                font-size: 12px;
+            }
+            .section-title {
+                font-size: 22px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .event-summary-banner {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+                text-align: center;
+            }
+            .event-summary-img {
+                width: 100%;
+                max-width: 250px;
+                height: 150px;
+            }
+            .venue-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 15px;
+            }
+            .venue-info {
+                text-align: center;
+                align-items: center;
+            }
+            .showtime-pills {
+                justify-content: center;
+            }
+            .bottom-action-bar {
+                padding: 12px 20px;
+            }
+            .action-bar-seats {
+                font-size: 14px;
+            }
+            .action-bar-total {
+                font-size: 18px;
+            }
+            .btn-book-action {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+
+        /* Seating and Workspace responsiveness */
+        @media (max-width: 900px) {
+            .booking-workspace {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            .seating-chart {
+                overflow-x: auto;
+                width: 100%;
+                padding: 15px 5px;
+                align-items: flex-start; /* allow horizontal scrolling */
+            }
+            .screen-container {
+                width: 95%;
+            }
+            .legend {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+
+        /* Mobile Drawers, Modals & Cards (max-width: 600px) */
+        @media (max-width: 600px) {
+            .checkout-drawer {
+                width: 100%;
+                border-radius: 0;
+            }
+            .drawer-header {
+                padding: 18px 20px;
+            }
+            .drawer-body {
+                padding: 20px;
+            }
+            .profile-card-layout {
+                gap: 20px;
+            }
+            .bookings-board-card {
+                padding: 20px;
+            }
+            .bookings-grid {
+                grid-template-columns: 1fr; /* Stack booking history cards on very small screens */
+            }
+        }
+
+        /* Small Phones (max-width: 480px) */
+        @media (max-width: 480px) {
+            .signin-card {
+                width: 92%;
+                padding: 25px 20px;
+            }
+            .signin-card h1 {
+                font-size: 28px !important;
+            }
+            .avatar-grid {
+                gap: 8px;
+            }
+            .avatar-option svg {
+                width: 35px;
+                height: 35px;
+            }
+            .ticket-card {
+                width: 92%;
+                margin: 15px;
+            }
+            .ticket-header, .ticket-body {
+                padding: 15px;
+            }
+            .ticket-card::before, .ticket-card::after {
+                display: none; /* Hide ticket card punches on very small screens to avoid weird overlapping */
+            }
+            .btn-edit-profile {
+                font-size: 12px;
+                padding: 8px 15px;
+            }
+        @keyframes pulseGlow {
+            0% { transform: scale(0.92); opacity: 0.7; filter: drop-shadow(0 0 2px rgba(255, 117, 143, 0.4)); }
+            100% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 117, 143, 0.8)); }
+        }
+        @keyframes pulseSelect {
+            0% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 117, 143, 0.5); }
+            50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(255, 117, 143, 0.85); }
+            100% { transform: scale(1); box-shadow: 0 0 8px rgba(255, 117, 143, 0.5); }
+        }
+        .seat.selected {
+            background-color: var(--bms-crimson-dark) !important;
+            color: #ffffff !important;
+            animation: pulseSelect 1.5s infinite ease-in-out !important;
+            border-color: #ffffff !important;
+        }
+        .seating-chart {
+            background: radial-gradient(circle at top, rgba(255, 117, 143, 0.05) 0%, rgba(255, 255, 255, 0) 70%) !important;
+            border-radius: 16px;
+            padding: 15px !important;
+        }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TIckify.co Sign In Screen Overlay -->
+    <div id="signin-fullscreen-overlay" class="signin-overlay">
+        <div class="signin-card">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <h1 style="font-family: var(--font-heading); color: var(--bms-crimson-dark); font-size: 36px; font-weight: 900; margin-bottom: 6px;">TIckify<span style="color: var(--bms-text-dark); font-size: 20px; font-weight: 500;">.co</span></h1>
+                <p style="font-size: 13px; color: var(--bms-text-muted); font-family: var(--font-main);">Curating the prettiest live experiences for you.</p>
+            </div>
+            
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="signin-username-input">Enter your username</label>
+                <input type="text" id="signin-username-input" placeholder="e.g. blossom_girl" value="blossom_girl">
+            </div>
+
+            <div class="input-group" style="margin-bottom: 15px;">
+                <label for="signin-bio-input">Describe your vibe (Bio)</label>
+                <input type="text" id="signin-bio-input" placeholder="e.g. Matcha and live music lover 🌸" value="Matcha and live music lover 🌸">
+            </div>
+
+            <div class="input-group" style="margin-bottom: 20px;">
+                <label for="signin-city-select">Select your city</label>
+                <select id="signin-city-select" class="checkout-form-input" style="margin-top: 0; background: white; padding: 12px;">
+                    <option value="London">London</option>
+                    <option value="New York">New York</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Tokyo">Tokyo</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label>Select your profile aesthetic</label>
+                <div class="avatar-grid">
+                    <div class="avatar-option selected" id="avatar-opt-1" onclick="selectAvatar('avatar1', this)">
+                        <svg viewBox="0 0 100 100" width="45" height="45">
+                            <circle cx="50" cy="50" r="45" fill="#FFF0F3" stroke="#FF758F" stroke-width="2"/>
+                            <circle cx="50" cy="45" r="18" fill="#FBC4AB"/>
+                            <path d="M30,38 C32,25 68,25 70,38" fill="#FF758F"/>
+                            <path d="M22,38 L78,38 C80,38 80,42 78,42 L22,42 C20,42 20,38 22,38 Z" fill="#FF758F"/>
+                            <circle cx="45" cy="48" r="2.5" fill="#2B2D42"/>
+                            <circle cx="55" cy="48" r="2.5" fill="#2B2D42"/>
+                            <path d="M47,53 Q50,56 53,53" fill="none" stroke="#2B2D42" stroke-width="1.5" stroke-linecap="round"/>
+                            <circle cx="38" cy="50" r="3" fill="#FFB7C5" opacity="0.6"/>
+                            <circle cx="62" cy="50" r="3" fill="#FFB7C5" opacity="0.6"/>
+                        </svg>
+                    </div>
+                    <div class="avatar-option" id="avatar-opt-2" onclick="selectAvatar('avatar2', this)">
+                        <svg viewBox="0 0 100 100" width="45" height="45">
+                            <circle cx="50" cy="50" r="45" fill="#F0F8FF" stroke="#8D99AE" stroke-width="2"/>
+                            <circle cx="50" cy="50" r="18" fill="#FFD166"/>
+                            <rect x="35" y="44" width="12" height="12" rx="6" fill="#2B2D42"/>
+                            <rect x="53" y="44" width="12" height="12" rx="6" fill="#2B2D42"/>
+                            <line x1="47" y1="50" x2="53" y2="50" stroke="#2B2D42" stroke-width="2"/>
+                            <path d="M48,58 Q50,61 52,58" fill="none" stroke="#2B2D42" stroke-width="1.5"/>
+                            <path d="M32,36 Q50,22 68,36" fill="none" stroke="#2B2D42" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="avatar-option" id="avatar-opt-3" onclick="selectAvatar('avatar3', this)">
+                        <svg viewBox="0 0 100 100" width="45" height="45">
+                            <circle cx="50" cy="50" r="45" fill="#FFFDFE" stroke="#FF758F" stroke-width="2"/>
+                            <circle cx="50" cy="32" r="10" fill="#FFE5EC"/>
+                            <circle cx="50" cy="68" r="10" fill="#FFE5EC"/>
+                            <circle cx="32" cy="50" r="10" fill="#FFE5EC"/>
+                            <circle cx="68" cy="50" r="10" fill="#FFE5EC"/>
+                            <circle cx="37" cy="37" r="10" fill="#FFE5EC"/>
+                            <circle cx="63" cy="63" r="10" fill="#FFE5EC"/>
+                            <circle cx="63" cy="37" r="10" fill="#FFE5EC"/>
+                            <circle cx="37" cy="63" r="10" fill="#FFE5EC"/>
+                            <circle cx="50" cy="50" r="14" fill="#FFD166"/>
+                            <circle cx="45" cy="48" r="2" fill="#2B2D42"/>
+                            <circle cx="55" cy="48" r="2" fill="#2B2D42"/>
+                            <path d="M46,54 Q50,58 54,54" fill="none" stroke="#2B2D42" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="avatar-option" id="avatar-opt-4" onclick="selectAvatar('avatar4', this)">
+                        <svg viewBox="0 0 100 100" width="45" height="45">
+                            <circle cx="50" cy="50" r="45" fill="#F4F1DE" stroke="#2B2D42" stroke-width="2"/>
+                            <polygon points="30,40 20,15 45,30" fill="#2B2D42"/>
+                            <polygon points="70,40 80,15 55,30" fill="#2B2D42"/>
+                            <ellipse cx="50" cy="52" rx="25" ry="20" fill="#2B2D42"/>
+                            <polygon points="28,36 22,20 38,28" fill="#FFB7C5"/>
+                            <polygon points="72,36 78,20 62,28" fill="#FFB7C5"/>
+                            <ellipse cx="40" cy="48" rx="2" ry="3" fill="#ffffff"/>
+                            <ellipse cx="60" cy="48" rx="2" ry="3" fill="#ffffff"/>
+                            <polygon points="50,54 48,52 52,52" fill="#FFB7C5"/>
+                            <path d="M47,56 Q50,58 50,56 Q50,58 53,56" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="20" y1="52" x2="35" y2="52" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="20" y1="56" x2="35" y2="55" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="80" y1="52" x2="65" y2="52" stroke="#ffffff" stroke-width="1.5"/>
+                            <line x1="80" y1="56" x2="65" y2="55" stroke="#ffffff" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-signin-submit" onclick="submitSignIn()">Enter TIckify.co</button>
+            <p style="font-size: 11px; text-align: center; color: var(--bms-text-muted); margin-top: 15px; cursor: pointer; text-decoration: underline;" onclick="skipSignIn()">Skip for now</p>
+        </div>
+    </div>
+
+    <!-- TIckify.co Header -->
+    <header>
+        <div class="logo-container" onclick="showEventsView()">
+            <span class="logo-tickify" style="font-family: var(--font-heading); font-size: 26px; font-weight: 800; color: var(--bms-crimson-dark); letter-spacing: -0.5px;">TIckify<span style="color: var(--bms-text-dark); font-size: 18px; font-weight: 500;">.co</span></span>
+        </div>
+        <div class="header-search">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input class="search-input" id="search-events-input" type="text" placeholder="Search for live concerts, movies, sports, cozy events...">
+        </div>
+        <div class="header-right">
+            <button class="city-selector" onclick="toggleCityDropdown(event)">
+                <span id="header-city-name">All Cities</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <ul class="city-dropdown-list" id="city-dropdown">
+                <li onclick="selectCity('ALL')">All Cities</li>
+                <li onclick="selectCity('London')">London</li>
+                <li onclick="selectCity('New York')">New York</li>
+                <li onclick="selectCity('Mumbai')">Mumbai</li>
+                <li onclick="selectCity('Tokyo')">Tokyo</li>
+            </ul>
+            <!-- Profile display -->
+            <div id="header-profile-badge" style="display: none; align-items: center; gap: 10px; cursor: pointer; background: var(--bms-sub-nav); padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--bms-border);" onclick="toggleProfileDropdown(event)">
+                <div id="header-avatar-container" style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center;"></div>
+                <span id="header-username-text" style="font-size: 13px; font-weight: 700; color: var(--bms-text-dark); max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">blossom_girl</span>
+            </div>
+            <button class="btn-signin" id="profile-signin-btn" onclick="openSignInModal()">Sign In</button>
+
+            <!-- Floating Profile Dropdown -->
+            <div class="profile-dropdown" id="profile-dropdown-menu">
+                <div class="dropdown-header">
+                    <span id="dropdown-user-badge">🌸 Golden Member</span>
+                </div>
+                <ul class="dropdown-links">
+                    <li onclick="showProfileView()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> My Profile</li>
+                    <li onclick="showProfileView('tickets-section')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="4"></line><line x1="8" y1="2" x2="8" y2="4"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> My Tickets</li>
+                    <li class="dropdown-divider"></li>
+                    <li onclick="submitSignOut()" style="color: var(--bms-crimson-dark); font-weight: 700;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> Sign Out</li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- BMS Sub Navigation -->
+    <nav class="sub-nav">
+        <div class="nav-links">
+            <a onclick="changeCategory('concert', this)" class="active">Concerts & Events</a>
+            <a onclick="changeCategory('movie', this)">Movies</a>
+            <a onclick="changeCategory('play', this)">Plays</a>
+            <a onclick="changeCategory('sport', this)">Sports</a>
+            <a onclick="changeCategory('activity', this)">Activities</a>
+            <a onclick="changeCategory('buzz', this)">Buzz</a>
+        </div>
+        <div class="nav-links-right">
+            <a onclick="openGiftCardsModal()">Gift Cards</a>
+            <a onclick="openOffersModal()" style="color: #4caf50; font-weight: 700;">Offers</a>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Concert Grid Selection Page -->
+        <div id="concert-selection-view">
+            <h2 class="section-title">
+                <span id="category-section-title">Concerts & Event Tickets</span>
+                <span id="events-grid-counter" style="font-size: 13px; font-weight: 500; color: var(--bms-text-muted);">Step 1: Choose Event</span>
+            </h2>
+            <div class="events-grid" id="concerts-container">
+                <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--bms-crimson);">
+                    <h3>Loading Concerts...</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buzz News View -->
+        <div id="buzz-news-view" style="display: none; animation: fadeIn 0.4s ease;">
+            <h2 class="section-title">
+                <span>BMS Buzz - Entertainment News & Trends</span>
+                <span style="font-size: 13px; font-weight: 500; color: var(--bms-text-muted);">Trending Stories</span>
+            </h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+                <div style="background-color: #ffffff; border: 1px solid var(--bms-border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <div style="height: 180px; background-image: url('https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=600&auto=format&fit=crop&q=80'); background-size: cover; background-position: center;"></div>
+                    <div style="padding: 20px;">
+                        <span style="color: var(--bms-crimson); font-size: 11px; font-weight: 700; text-transform: uppercase;">Concerts</span>
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 6px 0 10px; color: var(--bms-text-dark);">Taylor Swift Breaks Attendance Records at Wembley Stadium!</h3>
+                        <p style="font-size: 13px; color: var(--bms-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                            The pop sensation kicked off the London leg of her tour to a roaring crowd of 90,000 screaming fans. Ticket prices hit a dynamic scarcity multiplier of 2.5x as demand surged.
+                        </p>
+                        <span style="font-size: 11px; color: var(--bms-text-muted);">June 26, 2026 &bull; 4 min read</span>
+                    </div>
+                </div>
+                <div style="background-color: #ffffff; border: 1px solid var(--bms-border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <div style="height: 180px; background-image: url('https://images.unsplash.com/photo-1465847899084-d164df4dedc6?w=600&auto=format&fit=crop&q=80'); background-size: cover; background-position: center;"></div>
+                    <div style="padding: 20px;">
+                        <span style="color: var(--bms-crimson); font-size: 11px; font-weight: 700; text-transform: uppercase;">Trending</span>
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 6px 0 10px; color: var(--bms-text-dark);">Coldplay Announces Additional Dates for New York MetLife Show</h3>
+                        <p style="font-size: 13px; color: var(--bms-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                            Due to overwhelming demand, the band has added three extra show dates. Dynamic pricing will be active to balance capacity, with ticket status indicators updating in real time.
+                        </p>
+                        <span style="font-size: 11px; color: var(--bms-text-muted);">June 25, 2026 &bull; 3 min read</span>
+                    </div>
+                </div>
+                <div style="background-color: #ffffff; border: 1px solid var(--bms-border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <div style="height: 180px; background-image: url('https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=600&auto=format&fit=crop&q=80'); background-size: cover; background-position: center;"></div>
+                    <div style="padding: 20px;">
+                        <span style="color: var(--bms-crimson); font-size: 11px; font-weight: 700; text-transform: uppercase;">Movies</span>
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 6px 0 10px; color: var(--bms-text-dark);">Dune: Part Two IMAX Screens Booked Out in London</h3>
+                        <p style="font-size: 13px; color: var(--bms-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                            Sci-fi enthusiasts have completely filled theater seats for the upcoming weekend. PVR IMAX and BFI theater showtimes are displaying "Sold Out" status keys for all prime hours.
+                        </p>
+                        <span style="font-size: 11px; color: var(--bms-text-muted);">June 24, 2026 &bull; 5 min read</span>
+                    </div>
+                </div>
+                <div style="background-color: #ffffff; border: 1px solid var(--bms-border); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+                    <div style="height: 180px; background-image: url('https://images.unsplash.com/photo-1622279457486-62dcc4a4b1ca?w=600&auto=format&fit=crop&q=80'); background-size: cover; background-position: center;"></div>
+                    <div style="padding: 20px;">
+                        <span style="color: var(--bms-crimson); font-size: 11px; font-weight: 700; text-transform: uppercase;">Sports</span>
+                        <h3 style="font-size: 18px; font-weight: 700; margin: 6px 0 10px; color: var(--bms-text-dark);">Wimbledon 2026: Centre Court Seating Charts Released</h3>
+                        <p style="font-size: 13px; color: var(--bms-text-muted); line-height: 1.5; margin-bottom: 12px;">
+                            The official ticketing map is now live on BookMyShow. Grass court finals seating is divided into VIP Center, Court Standard, and East/West Balcony rows with live pricing.
+                        </p>
+                        <span style="font-size: 11px; color: var(--bms-text-muted);">June 23, 2026 &bull; 6 min read</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Profile Page -->
+        <div id="profile-view" style="display: none; animation: fadeIn 0.4s ease; margin-bottom: 50px;">
+            <div class="profile-container">
+                <div class="profile-card-layout">
+                    <!-- Left Side Details -->
+                    <div class="profile-left-column">
+                        <div class="profile-info-card">
+                            <div class="profile-cover-banner"></div>
+                            <div class="profile-avatar-wrapper">
+                                <div id="profile-page-avatar" class="profile-page-avatar-container"></div>
+                            </div>
+                            <div class="profile-details-content">
+                                <h2 id="profile-page-username" class="profile-username-heading">blossom_girl</h2>
+                                <span class="profile-user-badge">🌸 Aesthetic Explorer</span>
+                                <p id="profile-page-bio" class="profile-bio-text">Lovin' concert nights and matcha lattes ✨</p>
+                                
+                                <div class="profile-meta-badges">
+                                    <div class="meta-badge">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                        <span id="profile-page-city">London</span>
+                                    </div>
+                                    <div class="meta-badge">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="4"></line><line x1="8" y1="2" x2="8" y2="4"></line></svg>
+                                        <span id="profile-page-joined">Joined Jun 2026</span>
+                                    </div>
+                                </div>
+
+                                <button class="btn-edit-profile" onclick="toggleEditProfileForm()">Edit Profile</button>
+                            </div>
+                        </div>
+
+                        <!-- Edit Profile Inline Card -->
+                        <div class="profile-info-card edit-profile-card" id="edit-profile-form" style="display: none;">
+                            <h3 style="font-family: var(--font-heading); font-size: 18px; margin-bottom: 15px; color: var(--bms-text-dark);">Edit Details</h3>
+                            
+                            <div class="input-group" style="margin-bottom: 12px;">
+                                <label for="edit-username-input">Username</label>
+                                <input type="text" id="edit-username-input" class="checkout-form-input" style="margin-top: 2px;">
+                            </div>
+                            
+                            <div class="input-group" style="margin-bottom: 12px;">
+                                <label for="edit-bio-input">Biography</label>
+                                <input type="text" id="edit-bio-input" class="checkout-form-input" style="margin-top: 2px;">
+                            </div>
+                            
+                            <div class="input-group" style="margin-bottom: 12px;">
+                                <label for="edit-city-select">Preferred City</label>
+                                <select id="edit-city-select" class="checkout-form-input" style="margin-top: 2px; background: white; padding: 10px;">
+                                    <option value="London">London</option>
+                                    <option value="New York">New York</option>
+                                    <option value="Mumbai">Mumbai</option>
+                                    <option value="Tokyo">Tokyo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group" style="margin-bottom: 15px;">
+                                <label style="margin-bottom: 6px; display: block; font-size: 13px; font-weight: 700;">Change Profile Avatar</label>
+                                <div class="avatar-grid">
+                                    <div class="avatar-option" id="edit-avatar-opt-1" onclick="selectEditAvatar('avatar1', this)">
+                                        <svg viewBox="0 0 100 100" width="40" height="40">
+                                            <circle cx="50" cy="50" r="45" fill="#FFF0F3" stroke="#FF758F" stroke-width="2"/>
+                                            <circle cx="50" cy="45" r="18" fill="#FBC4AB"/>
+                                            <path d="M30,38 C32,25 68,25 70,38" fill="#FF758F"/>
+                                            <path d="M22,38 L78,38 C80,38 80,42 78,42 L22,42 C20,42 20,38 22,38 Z" fill="#FF758F"/>
+                                            <circle cx="45" cy="48" r="2.5" fill="#2B2D42"/>
+                                            <circle cx="55" cy="48" r="2.5" fill="#2B2D42"/>
+                                            <path d="M47,53 Q50,56 53,53" fill="none" stroke="#2B2D42" stroke-width="1.5" stroke-linecap="round"/>
+                                            <circle cx="38" cy="50" r="3" fill="#FFB7C5" opacity="0.6"/>
+                                            <circle cx="62" cy="50" r="3" fill="#FFB7C5" opacity="0.6"/>
+                                        </svg>
+                                    </div>
+                                    <div class="avatar-option" id="edit-avatar-opt-2" onclick="selectEditAvatar('avatar2', this)">
+                                        <svg viewBox="0 0 100 100" width="40" height="40">
+                                            <circle cx="50" cy="50" r="45" fill="#F0F8FF" stroke="#8D99AE" stroke-width="2"/>
+                                            <circle cx="50" cy="50" r="18" fill="#FFD166"/>
+                                            <rect x="35" y="44" width="12" height="12" rx="6" fill="#2B2D42"/>
+                                            <rect x="53" y="44" width="12" height="12" rx="6" fill="#2B2D42"/>
+                                            <line x1="47" y1="50" x2="53" y2="50" stroke="#2B2D42" stroke-width="2"/>
+                                            <path d="M48,58 Q50,61 52,58" fill="none" stroke="#2B2D42" stroke-width="1.5"/>
+                                            <path d="M32,36 Q50,22 68,36" fill="none" stroke="#2B2D42" stroke-width="3" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="avatar-option" id="edit-avatar-opt-3" onclick="selectEditAvatar('avatar3', this)">
+                                        <svg viewBox="0 0 100 100" width="40" height="40">
+                                            <circle cx="50" cy="50" r="45" fill="#FFFDFE" stroke="#FF758F" stroke-width="2"/>
+                                            <circle cx="50" cy="32" r="10" fill="#FFE5EC"/>
+                                            <circle cx="50" cy="68" r="10" fill="#FFE5EC"/>
+                                            <circle cx="32" cy="50" r="10" fill="#FFE5EC"/>
+                                            <circle cx="68" cy="50" r="10" fill="#FFE5EC"/>
+                                            <circle cx="37" cy="37" r="10" fill="#FFE5EC"/>
+                                            <circle cx="63" cy="63" r="10" fill="#FFE5EC"/>
+                                            <circle cx="63" cy="37" r="10" fill="#FFE5EC"/>
+                                            <circle cx="37" cy="63" r="10" fill="#FFE5EC"/>
+                                            <circle cx="50" cy="50" r="14" fill="#FFD166"/>
+                                            <circle cx="45" cy="48" r="2" fill="#2B2D42"/>
+                                            <circle cx="55" cy="48" r="2" fill="#2B2D42"/>
+                                            <path d="M46,54 Q50,58 54,54" fill="none" stroke="#2B2D42" stroke-width="2" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="avatar-option" id="edit-avatar-opt-4" onclick="selectEditAvatar('avatar4', this)">
+                                        <svg viewBox="0 0 100 100" width="40" height="40">
+                                            <circle cx="50" cy="50" r="45" fill="#F4F1DE" stroke="#2B2D42" stroke-width="2"/>
+                                            <polygon points="30,40 20,15 45,30" fill="#2B2D42"/>
+                                            <polygon points="70,40 80,15 55,30" fill="#2B2D42"/>
+                                            <ellipse cx="50" cy="52" rx="25" ry="20" fill="#2B2D42"/>
+                                            <polygon points="28,36 22,20 38,28" fill="#FFB7C5"/>
+                                            <polygon points="72,36 78,20 62,28" fill="#FFB7C5"/>
+                                            <ellipse cx="40" cy="48" rx="2" ry="3" fill="#ffffff"/>
+                                            <ellipse cx="60" cy="48" rx="2" ry="3" fill="#ffffff"/>
+                                            <polygon points="50,54 48,52 52,52" fill="#FFB7C5"/>
+                                            <path d="M47,56 Q50,58 50,56 Q50,58 53,56" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+                                            <line x1="20" y1="52" x2="35" y2="52" stroke="#ffffff" stroke-width="1.5"/>
+                                            <line x1="20" y1="56" x2="35" y2="55" stroke="#ffffff" stroke-width="1.5"/>
+                                            <line x1="80" y1="52" x2="65" y2="52" stroke="#ffffff" stroke-width="1.5"/>
+                                            <line x1="80" y1="56" x2="65" y2="55" stroke="#ffffff" stroke-width="1.5"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-signin" onclick="saveProfileChanges()" style="flex-grow: 1; border-radius: 8px; font-weight: 700; padding: 10px 15px;">Save Changes</button>
+                                <button class="back-btn" onclick="toggleEditProfileForm()" style="margin-bottom: 0; padding: 10px 15px; border-radius: 8px; flex-grow: 0;">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side Bookings Board -->
+                    <div class="profile-right-column" id="tickets-section">
+                        <div class="bookings-board-card">
+                            <h3 class="bookings-board-title">My Booked Tickets 🎟️</h3>
+                            
+                            <div class="bookings-grid" id="bookings-history-grid">
+                                <!-- Bookings list loaded from localStorage -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Showtime Selection Page (Intermediate BMS Step) -->
+        <div id="showtime-selection-view" class="showtime-container">
+            <button class="back-btn" onclick="showEventsView()">&larr; Back to Events</button>
+            
+            <div class="event-summary-banner">
+                <div class="event-summary-img" id="showtime-banner-img"></div>
+                <div class="event-summary-details">
+                    <h2 id="showtime-event-title">-</h2>
+                    <p id="showtime-event-desc">-</p>
+                </div>
+            </div>
+
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--bms-text-dark);">Select Date</h3>
+            <div class="date-selector" id="showtime-date-selector">
+                <!-- Date tabs injected dynamically -->
+            </div>
+
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--bms-text-dark);">Available Venues & Showtimes</h3>
+            <div class="venue-list" id="showtime-venue-list">
+                <!-- Venues & times injected dynamically -->
+            </div>
+        </div>
+
+        <!-- Seating Map & Workspace -->
+        <div id="booking-view" class="booking-workspace">
+            <div>
+                <button class="back-btn" onclick="showShowtimeSelectionView()">&larr; Change Showtime</button>
+                <div class="card-panel">
+                    <h3 id="selected-concert-title" style="font-size: 22px; font-weight: 800; color: var(--bms-text-dark); margin-bottom: 4px;">-</h3>
+                    <p id="selected-concert-meta" style="color: var(--bms-text-muted); font-size: 13px; margin-bottom: 30px;">-</p>
+                    
+                    <!-- Curved Screen indicator -->
+                    <div class="screen-container">
+                        <div class="screen-curve"></div>
+                        <div class="screen-label">STAGE / CURVED SCREEN</div>
+                    </div>
+
+                    <!-- Stage View Preview Panel -->
+                    <div class="stage-view-preview" id="stage-view-preview" style="display: none; margin: 15px auto; width: 100%; max-width: 500px; height: 130px; border-radius: 16px; border: 1.5px solid var(--bms-border); background: linear-gradient(to bottom, #111 0%, #1c1a24 100%); position: relative; overflow: hidden; box-shadow: inset 0 0 25px rgba(255, 117, 143, 0.35), 0 8px 25px rgba(255,117,143,0.06); animation: fadeIn 0.3s ease;">
+                        <div class="stage-curtain" style="position: absolute; top: 0; left: 0; right: 0; height: 16px; background: rgba(255,117,143,0.25); box-shadow: 0 2px 10px rgba(255,117,143,0.15); border-bottom: 1px dashed rgba(255,117,143,0.3);"></div>
+                        <div class="stage-performer" id="stage-performer" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); text-align: center; color: white; transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);">
+                            <div class="performer-glow" id="performer-glow" style="width: 38px; height: 38px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,117,143,0.4) 40%, rgba(255,117,143,0) 70%); margin: 0 auto; animation: pulseGlow 1.8s infinite alternate; transition: all 0.5s ease;"></div>
+                            <span style="font-size: 11px; font-weight: 800; font-family: var(--font-mono); letter-spacing: 1.5px; color: var(--bms-crimson-dark); text-shadow: 0 0 8px rgba(255,255,255,0.7); display: block; margin-top: 4px;">STAGE VIEW PREVIEW</span>
+                        </div>
+                        <div class="stage-spotlight" id="spotlight-left" style="position: absolute; top: 0; left: 20%; width: 50px; height: 110px; background: linear-gradient(135deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 80%); transform: rotate(18deg); transform-origin: top left; pointer-events: none; transition: all 0.5s ease;"></div>
+                        <div class="stage-spotlight" id="spotlight-right" style="position: absolute; top: 0; right: 20%; width: 50px; height: 110px; background: linear-gradient(225deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 80%); transform: rotate(-18deg); transform-origin: top right; pointer-events: none; transition: all 0.5s ease;"></div>
+                        
+                        <!-- Foreground Seats Container -->
+                        <div id="stage-foreground-seats" style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; display: flex; justify-content: center; gap: 8px; align-items: flex-end; padding-bottom: 5px; pointer-events: none; transition: all 0.5s ease;"></div>
+
+                        <div style="position: absolute; bottom: 8px; left: 15px; font-size: 10px; color: var(--bms-text-muted); font-family: var(--font-mono); font-weight: 600; z-index: 10;" id="stage-view-label">Hover or select a seat to preview stage view</div>
+                        <div style="position: absolute; bottom: 8px; right: 15px; font-size: 14px; animation: pulseGlow 1.8s infinite alternate; z-index: 10;">✨</div>
+                    </div>
+
+                    <div class="seating-chart" id="seating-chart-container">
+                        <!-- Seats seeded dynamically -->
+                    </div>
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="border: 1px solid var(--color-open);"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: rgba(255, 152, 0, 0.15); border: 1px solid var(--color-reserved);"></div>
+                            <span>In-Flight Lock</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: rgba(158, 158, 158, 0.2); border: 1px solid var(--color-confirmed);"></div>
+                            <span>Sold Out</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-panel">
+                <!-- Stats card -->
+                <div class="card-panel stat-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-available">0</div>
+                        <div class="stat-label">Available</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-booked">0</div>
+                        <div class="stat-label">Sold Out</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="stat-multiplier" style="color: var(--bms-crimson);">1.00x</div>
+                        <div class="stat-label">Multiplier</div>
+                    </div>
+                </div>
+
+                <!-- Advanced Simulator banner -->
+                <div class="developer-promo-panel">
+                    <div class="developer-promo-title">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                        <span>Saga Developer Panel</span>
+                    </div>
+                    <p style="font-size: 11px; color: var(--bms-text-muted); line-height: 1.4; margin-bottom: 8px;">
+                        Control artificial failure gates dynamically to verify Redis locks and Kafka compensating rollbacks.
+                    </p>
+                    <div class="developer-checkbox-group">
+                        <label class="developer-checkbox" style="color: #c94c4c;">
+                            <input type="checkbox" id="sim-double-book">
+                            <div>
+                                <strong>Simulate Double-Booking Conflict</strong>
+                                <div style="font-size: 9px; color: #a98080;">Fires two concurrent checkouts for the same seat to test Redis locking.</div>
+                            </div>
+                        </label>
+                        <label class="developer-checkbox" style="color: #d18a00;">
+                            <input type="checkbox" id="sim-fail-payment">
+                            <div>
+                                <strong>Simulate Payment Gateway Failure</strong>
+                                <div style="font-size: 9px; color: #b79040;">Rejects card payment in Kafka to roll back seat status back to OPEN.</div>
+                            </div>
+                        </label>
+                        <label class="developer-checkbox" style="color: #6a0572;">
+                            <input type="checkbox" id="sim-fail-ticket">
+                            <div>
+                                <strong>Simulate PDF Generation Crash</strong>
+                                <div style="font-size: 9px; color: #8e6c92;">Fails ticket compiler at final step to issue refunds and release seats.</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Saga Live Monitor logs -->
+                <div class="saga-monitor" id="saga-monitor-logs">
+                    <div class="monitor-header">
+                        <span>BMS Kafka Live Logs Tracker</span>
+                        <span style="font-size: 9px; color: #6c757d;">STREAM ACTIVE</span>
+                    </div>
+                    <div class="log-entry log-system">
+                        <span class="log-time">[System]</span> Live stream connected. Select seats to begin.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom Action Bar (BMS Seating Selection Footer) -->
+    <div class="bottom-action-bar" id="bms-bottom-bar">
+        <div class="action-bar-left">
+            <div class="action-bar-seats" id="bottom-seats-text">Seats: -</div>
+            <div class="action-bar-total" id="bottom-price-text">Total: $0.00</div>
+        </div>
+        <button class="btn-book-action" id="bottom-book-btn" onclick="openCheckoutDrawer()">Book Selected Seats</button>
+    </div>
+
+    <!-- Detailed Checkout Drawer -->
+    <div class="checkout-drawer" id="checkout-drawer-view">
+        <div class="drawer-header">
+            <h3>Booking Summary</h3>
+            <button class="drawer-close" onclick="closeCheckoutDrawer()">&times;</button>
+        </div>
+        <div class="drawer-body">
+            <div>
+                <h4 class="drawer-event-title" id="drawer-title">-</h4>
+                <p class="drawer-event-meta" id="drawer-meta">-</p>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="breakdown-row">
+                    <span id="breakdown-seats-label">Tickets (0)</span>
+                    <span id="breakdown-seats-value">$0.00</span>
+                </div>
+                <!-- Promo Discount Row -->
+                <div class="breakdown-row" id="breakdown-discount-row" style="display: none; color: #4caf50; font-weight: 700;">
+                    <span id="breakdown-discount-label">Coupon Discount</span>
+                    <span id="breakdown-discount-value">-$0.00</span>
+                </div>
+                <div class="breakdown-row" style="font-size: 12px; color: var(--bms-text-muted);">
+                    <span>Internet Handling Fees</span>
+                    <span id="breakdown-handling-value">$0.00</span>
+                </div>
+                <div class="breakdown-row" style="font-size: 11px; color: #8e8e8e; padding-left: 10px;">
+                    <span>- Booking Fee ($1.50 / tkt)</span>
+                    <span id="breakdown-booking-fee">$0.00</span>
+                </div>
+                <div class="breakdown-row" style="font-size: 11px; color: #8e8e8e; padding-left: 10px; margin-bottom: 6px;">
+                    <span>- Integrated Tax ($0.27 / tkt)</span>
+                    <span id="breakdown-tax-fee">$0.00</span>
+                </div>
+                
+                <div class="book-smile-card" onclick="toggleBookASmile()">
+                    <input type="checkbox" id="book-smile-check" checked style="margin-top: 1px; cursor: pointer;">
+                    <div>
+                        <strong>Donate $1.00 to BookASmile</strong>
+                        <div style="color: var(--bms-text-muted); margin-top: 2px;">Help educate underprivileged youngsters across the country.</div>
+                    </div>
+                </div>
+
+                <div class="breakdown-row total-payable">
+                    <span>Amount Payable</span>
+                    <span id="breakdown-payable-value">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Promo Coupon Input -->
+            <div style="margin-bottom: 20px; border-bottom: 1px solid var(--bms-border); padding-bottom: 15px;">
+                <label style="font-size: 12px; font-weight: 700; color: var(--bms-text-dark);" for="promoCode">Promo / Coupon Code</label>
+                <div style="display: flex; gap: 8px; margin-top: 5px;">
+                    <input class="checkout-form-input" type="text" id="promoCode" placeholder="e.g. BMS30" style="margin-top: 0; flex-grow: 1;">
+                    <button class="btn-signin" onclick="applyPromoCode()" style="padding: 10px 15px; border-radius: 6px; font-weight: 700;">Apply</button>
+                </div>
+                <div id="promo-message" style="font-size: 11px; margin-top: 4px; font-weight: 600;"></div>
+            </div>
+
+            <div style="margin-top: auto;">
+                <label style="font-size: 12px; font-weight: 700; color: var(--bms-text-dark);" for="customerId">Customer Username / ID</label>
+                <input class="checkout-form-input" type="text" id="customerId" placeholder="e.g. user_john_doe" value="john_doe_99">
+                <p style="font-size: 11px; color: var(--bms-text-muted); margin-top: 5px; margin-bottom: 20px;">
+                    Tickets will be linked to this username in the booking database.
+                </p>
+                <button class="btn-proceed-pay" id="proceed-pay-btn" onclick="startCheckout()">Proceed to Pay</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ticket Confirmation Modal -->
+    <div class="ticket-modal" id="ticket-modal-view">
+        <div class="ticket-card">
+            <div class="ticket-header">
+                <h3 style="font-size: 20px; font-weight: 800; color: var(--bms-crimson); letter-spacing: 0.5px;">ENTRY TICKET RECEIPT</h3>
+                <p style="font-size: 10px; color: var(--bms-text-muted); margin-top: 3px;">SHOW THIS AT THE VENUE GATE</p>
+            </div>
+            <div class="ticket-body">
+                <div class="ticket-field">
+                    <div class="ticket-label">Concert / Event</div>
+                    <div class="ticket-value" id="ticket-event-val">-</div>
+                </div>
+                
+                <!-- Container for seats booked -->
+                <div id="ticket-list-container" style="max-height: 120px; overflow-y: auto; margin-bottom: 12px;">
+                    <!-- Seats list -->
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="ticket-field">
+                        <div class="ticket-label">Customer ID</div>
+                        <div class="ticket-value" id="ticket-customer-val">-</div>
+                    </div>
+                    <div class="ticket-field">
+                        <div class="ticket-label">Date Issued</div>
+                        <div class="ticket-value" id="ticket-date-val">-</div>
+                    </div>
+                </div>
+                
+                <div class="ticket-field" style="margin-top: 8px;">
+                    <div class="ticket-label">Total Amount Paid (Incl. Fees)</div>
+                    <div class="ticket-value" id="ticket-price-val" style="color: var(--bms-crimson); font-size: 20px;">-</div>
+                </div>
+
+                <div class="barcode-container">
+                    <div class="barcode-img">
+                        <div class="barcode-bar"></div>
+                    </div>
+                    <div style="font-family: var(--font-mono); font-size: 9px; color: var(--bms-text-muted);" id="barcode-url-text">-</div>
+                </div>
+
+                <button class="ticket-close" onclick="closeTicketModal()">Done & Return</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offers Modal -->
+    <div class="ticket-modal" id="offers-modal-view">
+        <div class="ticket-card" style="max-width: 420px; width: 90%; border-color: #4caf50;">
+            <div class="ticket-header" style="background-color: #4caf50; color: #ffffff;">
+                <h3 style="font-size: 20px; font-weight: 800;">Exclusive TIckify.co Offers</h3>
+            </div>
+            <div class="ticket-body" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <div style="background-color: #f1fcf1; border: 1px dashed #4caf50; padding: 12px; border-radius: 8px;">
+                    <div style="font-weight: 700; color: #2e7d32; font-size: 15px; margin-bottom: 4px;">GET 30% OFF ON ALL BOOKINGS</div>
+                    <div style="font-size: 12px; color: var(--bms-text-dark); margin-bottom: 6px;">Use code <strong>BMS30</strong> on any event booking order.</div>
+                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--bms-text-muted);">Valid on all categories.</div>
+                </div>
+                <div style="background-color: #f1fcf1; border: 1px dashed #4caf50; padding: 12px; border-radius: 8px;">
+                    <div style="font-weight: 700; color: #2e7d32; font-size: 15px; margin-bottom: 4px;">GET 20% OFF ON ORDERS</div>
+                    <div style="font-size: 12px; color: var(--bms-text-dark); margin-bottom: 6px;">Use code <strong>BMS20</strong> at checkout.</div>
+                    <div style="font-family: var(--font-mono); font-size: 10px; color: var(--bms-text-muted);">Max discount of up to $50.00.</div>
+                </div>
+                <button class="ticket-close" onclick="closeOffersModal()" style="background-color: #4caf50;">Great, Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gift Cards Modal -->
+    <div class="ticket-modal" id="giftcards-modal-view">
+        <div class="ticket-card" style="max-width: 400px; width: 90%; border-color: var(--bms-crimson);">
+            <div class="ticket-header" style="background-color: var(--bms-crimson); color: #ffffff;">
+                <h3 style="font-size: 20px; font-weight: 800;">TIckify.co Gift Cards</h3>
+            </div>
+            <div class="ticket-body" style="padding: 20px; text-align: center;">
+                <div style="background: linear-gradient(135deg, #f84464 0%, #ff758c 100%); color: #ffffff; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(248,68,100,0.3);">
+                    <div style="font-weight: 800; font-size: 22px; letter-spacing: 1px; margin-bottom: 5px;">GIFT CARD</div>
+                    <div style="font-size: 13px; opacity: 0.9;">Redeemable for any concert or movie tickets</div>
+                    <div style="font-family: var(--font-mono); font-size: 16px; font-weight: 700; margin-top: 20px; border: 1px dashed #ffffff; padding: 6px; border-radius: 4px; display: inline-block;">GIFT-TICKIFY-5000</div>
+                </div>
+                <p style="font-size: 12px; color: var(--bms-text-muted); line-height: 1.4; margin-bottom: 20px;">
+                    Send gift cards to your friends and let them book their favorite concert or movie tickets instantly!
+                </p>
+                <button class="ticket-close" onclick="closeGiftCardsModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL config to support local filesystem file:// access and CORS
+        const API_BASE_URL = (window.location.protocol === 'file:' || window.location.port !== '8085') 
+            ? 'http://localhost:8085' 
+            : '';
+
+        function getCleanImageUrl(url) {
+            if (!url) return '';
+            return url.startsWith('/') ? url.substring(1) : url;
+        }
+
+        const MOCK_EVENTS = [
+            // Concerts
+            {
+                id: "a8b0938f-d124-4f40-8b63-fb71de43026f",
+                title: "Taylor Swift | The Eras Tour",
+                description: "Experience the pop phenomenon live in an unforgettable stadium show featuring all her musical eras.",
+                date: "November 15, 2026",
+                venue: "Wembley Stadium, London",
+                imageUrl: "/images/taylor_swift.png",
+                category: "concert",
+                city: "London"
+            },
+            {
+                id: "c2957bfa-c567-42dc-8656-78b164a2754d",
+                title: "Coldplay | Music of the Spheres Tour",
+                description: "A spectacular night of lights, color, and classic anthems under the stars.",
+                date: "December 2, 2026",
+                venue: "MetLife Stadium, New York",
+                imageUrl: "/images/coldplay.png",
+                category: "concert",
+                city: "New York"
+            },
+            {
+                id: "d688cf8b-eb3f-42e6-a059-86e42b2609bf",
+                title: "Billie Eilish | Hit Me Hard and Soft Tour",
+                description: "An intimate, high-energy performance featuring tracks from her acclaimed new album.",
+                date: "October 22, 2026",
+                venue: "Madison Square Garden, New York",
+                imageUrl: "/images/billie_eilish.png",
+                category: "concert",
+                city: "New York"
+            },
+            // Movies
+            {
+                id: "e439bb7f-71b0-482a-8ea6-fde29bc83609",
+                title: "Dune: Part Two",
+                description: "Follow the mythic journey of Paul Atreides as he unites with Chani and the Fremen.",
+                date: "June 28, 2026",
+                venue: "BFI IMAX Cinema, London",
+                imageUrl: "/images/dune.png",
+                category: "movie",
+                city: "London"
+            },
+            {
+                id: "a3901b0f-8c34-4b55-a50d-8ea0b555776d",
+                title: "Spider-Man: Beyond the Spider-Verse",
+                description: "Miles Morales swings back into action across the multiverse in the ultimate final chapter.",
+                date: "July 12, 2026",
+                venue: "PVR Icon Theater, Mumbai",
+                imageUrl: "/images/spiderman.png",
+                category: "movie",
+                city: "Mumbai"
+            },
+            {
+                id: "b0017cfa-4d1a-4712-b9cf-2b81d77a83bb",
+                title: "Oppenheimer",
+                description: "The story of American scientist J. Robert Oppenheimer and his role in the development of the atomic bomb.",
+                date: "June 29, 2026",
+                venue: "AMC Lincoln Square, New York",
+                imageUrl: "/images/oppenheimer.png",
+                category: "movie",
+                city: "New York"
+            },
+            {
+                id: "d99b110a-3c58-45a8-b997-d81ff110037a",
+                title: "Inception: Special IMAX Screening",
+                description: "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task.",
+                date: "July 5, 2026",
+                venue: "TOHO Cinemas, Tokyo",
+                imageUrl: "/images/inception.png",
+                category: "movie",
+                city: "Tokyo"
+            },
+            // Plays
+            {
+                id: "f01b3d7a-18e4-4d83-9b88-1fa12228be0a",
+                title: "Hamlet | The Royal Shakespeare",
+                description: "Shakespeare's monumental tragedy of vengeance, doubt, and betrayal performed live on stage.",
+                date: "July 2, 2026",
+                venue: "Royal Shakespeare Theatre, London",
+                imageUrl: "/images/hamlet.png",
+                category: "play",
+                city: "London"
+            },
+            {
+                id: "c9012aab-2287-43cf-bc8a-d99aa2ba8e0b",
+                title: "The Lion King Broadway",
+                description: "Experience the jaw-dropping artistry, unforgettable music, and heartwarming story live on Broadway.",
+                date: "July 15, 2026",
+                venue: "Minskoff Theatre, New York",
+                imageUrl: "/images/lion_king.png",
+                category: "play",
+                city: "New York"
+            },
+            {
+                id: "a9918cba-091a-4632-a00d-f88a6d71b3e9",
+                title: "Wicked The Musical",
+                description: "The sensational story of two unlikely friends in the Land of Oz before Dorothy's arrival.",
+                date: "August 1, 2026",
+                venue: "Nita Mukesh Ambani Cultural Centre, Mumbai",
+                imageUrl: "/images/wicked.png",
+                category: "play",
+                city: "Mumbai"
+            },
+            // Sports
+            {
+                id: "c88e9dcb-b283-4903-b09e-711bc2ba8f81",
+                title: "Wimbledon Tennis Finals 2026",
+                description: "Watch the world's elite tennis players battle for supremacy on the historic grass courts of London.",
+                date: "July 10, 2026",
+                venue: "Centre Court, London",
+                imageUrl: "/images/wimbledon.png",
+                category: "sport",
+                city: "London"
+            },
+            {
+                id: "d1123bf0-19ef-4c12-9bd8-47712bac811a",
+                title: "NBA Finals Game 7",
+                description: "Witness history in the making as the top basketball champions compete in a winner-takes-all game.",
+                date: "June 27, 2026",
+                venue: "Barclays Center, New York",
+                imageUrl: "/images/nba.png",
+                category: "sport",
+                city: "New York"
+            },
+            {
+                id: "e77a11bf-8ef4-4a2a-b092-2bac831bf92a",
+                title: "T20 Cricket Premier League Finals",
+                description: "Experience the electrical atmosphere as the top cricket franchises clash for the championship trophy.",
+                date: "June 30, 2026",
+                venue: "Wankhede Stadium, Mumbai",
+                imageUrl: "/images/cricket.png",
+                category: "sport",
+                city: "Mumbai"
+            },
+            // Activities
+            {
+                id: "f662a8c0-8efb-4e12-b883-9e1bf003bb11",
+                title: "Stargazing & Telescope Night Tour",
+                description: "Explore planets, constellations, and distant galaxies under the guidance of expert astronomers.",
+                date: "July 4, 2026",
+                venue: "Royal Observatory Greenwich, London",
+                imageUrl: "/images/stargazing.png",
+                category: "activity",
+                city: "London"
+            },
+            {
+                id: "a22b7cfa-33cf-41c2-901d-bfa2ba99cf02",
+                title: "Pottery & Wine Crafting Workshop",
+                description: "Mold your own clay masterpiece while enjoying premium vintage wines in a cozy studio setting.",
+                date: "July 8, 2026",
+                venue: "Clay & Sip Studio, Mumbai",
+                imageUrl: "/images/pottery.png",
+                category: "activity",
+                city: "Mumbai"
+            },
+            {
+                id: "c33b8dfa-8cfa-4da2-bcf8-d3bc8f1ab211",
+                title: "Tokyo Street Food Midnight Tour",
+                description: "Savor fresh sushi, yakitori, and local delicacies as you explore Tokyo's secret alleyways.",
+                date: "July 11, 2026",
+                venue: "Shibuya Food Alleys, Tokyo",
+                imageUrl: "/images/street_food.png",
+                category: "activity",
+                city: "Tokyo"
+            }
+        ];
+
+        let allEvents = MOCK_EVENTS;
+        let currentConcert = null;
+        let selectedDateStr = "";
+        let selectedTimeStr = "";
+        let selectedSeats = new Map(); // seatId -> seat object
+        let activePolls = new Map(); // seatId -> polling interval
+        let currentRetryTokens = new Map(); // seatId -> token
+        let successfulBookings = new Map();
+        let failedBookings = new Map();
+        const persistedBookedSeats = new Set();
+
+        // Filters State
+        let activeCategory = "concert";
+        let activeCity = "ALL";
+        let searchQuery = "";
+        let appliedDiscountPercent = 0;
+
+        // Sign In Profile State
+        let selectedAvatarId = "avatar1";
+
+        // SVG templates to inject dynamically into header when signed in
+        const avatarSvgs = {
+            avatar1: `
+                <svg viewBox="0 0 100 100" width="28" height="28">
+                    <circle cx="50" cy="50" r="45" fill="#FFF0F3" stroke="#FF758F" stroke-width="2"/>
+                    <circle cx="50" cy="45" r="18" fill="#FBC4AB"/>
+                    <path d="M30,38 C32,25 68,25 70,38" fill="#FF758F"/>
+                    <path d="M22,38 L78,38 C80,38 80,42 78,42 L22,42 C20,42 20,38 22,38 Z" fill="#FF758F"/>
+                    <circle cx="45" cy="48" r="2.5" fill="#2B2D42"/>
+                    <circle cx="55" cy="48" r="2.5" fill="#2B2D42"/>
+                    <path d="M47,53 Q50,56 53,53" fill="none" stroke="#2B2D42" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            `,
+            avatar2: `
+                <svg viewBox="0 0 100 100" width="28" height="28">
+                    <circle cx="50" cy="50" r="45" fill="#F0F8FF" stroke="#8D99AE" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="18" fill="#FFD166"/>
+                    <rect x="35" y="44" width="12" height="12" rx="6" fill="#2B2D42"/>
+                    <rect x="53" y="44" width="12" height="12" rx="6" fill="#2B2D42"/>
+                    <line x1="47" y1="50" x2="53" y2="50" stroke="#2B2D42" stroke-width="2"/>
+                    <path d="M48,58 Q50,61 52,58" fill="none" stroke="#2B2D42" stroke-width="1.5"/>
+                    <path d="M32,36 Q50,22 68,36" fill="none" stroke="#2B2D42" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            `,
+            avatar3: `
+                <svg viewBox="0 0 100 100" width="28" height="28">
+                    <circle cx="50" cy="50" r="45" fill="#FFFDFE" stroke="#FF758F" stroke-width="2"/>
+                    <circle cx="50" cy="32" r="10" fill="#FFE5EC"/>
+                    <circle cx="50" cy="68" r="10" fill="#FFE5EC"/>
+                    <circle cx="32" cy="50" r="10" fill="#FFE5EC"/>
+                    <circle cx="68" cy="50" r="10" fill="#FFE5EC"/>
+                    <circle cx="50" cy="50" r="14" fill="#FFD166"/>
+                    <circle cx="45" cy="48" r="2" fill="#2B2D42"/>
+                    <circle cx="55" cy="48" r="2" fill="#2B2D42"/>
+                    <path d="M46,54 Q50,58 54,54" fill="none" stroke="#2B2D42" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            `,
+            avatar4: `
+                <svg viewBox="0 0 100 100" width="28" height="28">
+                    <circle cx="50" cy="50" r="45" fill="#F4F1DE" stroke="#2B2D42" stroke-width="2"/>
+                    <polygon points="30,40 20,15 45,30" fill="#2B2D42"/>
+                    <polygon points="70,40 80,15 55,30" fill="#2B2D42"/>
+                    <ellipse cx="50" cy="52" rx="25" ry="20" fill="#2B2D42"/>
+                    <ellipse cx="40" cy="48" rx="2" ry="3" fill="#ffffff"/>
+                    <ellipse cx="60" cy="48" rx="2" ry="3" fill="#ffffff"/>
+                </svg>
+            `
+        };
+
+        // Fetch concerts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchEvents();
+            setupFilters();
+            checkExistingSignIn();
+        });
+
+        let selectedEditAvatarId = "avatar1";
+
+        function selectAvatar(avatarId, element) {
+            selectedAvatarId = avatarId;
+            document.querySelectorAll('#signin-fullscreen-overlay .avatar-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function selectEditAvatar(avatarId, element) {
+            selectedEditAvatarId = avatarId;
+            document.querySelectorAll('#edit-profile-form .avatar-option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function updateEditAvatarSelection() {
+            document.querySelectorAll('#edit-profile-form .avatar-option').forEach(opt => opt.classList.remove('selected'));
+            const map = {
+                avatar1: 'edit-avatar-opt-1',
+                avatar2: 'edit-avatar-opt-2',
+                avatar3: 'edit-avatar-opt-3',
+                avatar4: 'edit-avatar-opt-4'
+            };
+            const activeId = map[selectedEditAvatarId];
+            if (activeId) {
+                const el = document.getElementById(activeId);
+                if (el) el.classList.add('selected');
+            }
+        }
+
+        function submitSignIn() {
+            const username = document.getElementById('signin-username-input').value.trim();
+            if (!username) {
+                alert("Please enter a username!");
+                return;
+            }
+            const bio = document.getElementById('signin-bio-input').value.trim() || "Lovin' concert nights and matcha lattes ✨";
+            const city = document.getElementById('signin-city-select').value;
+            const joinDate = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+            
+            localStorage.setItem('tickify_username', username);
+            localStorage.setItem('tickify_avatar', selectedAvatarId);
+            localStorage.setItem('tickify_bio', bio);
+            localStorage.setItem('tickify_city', city);
+            localStorage.setItem('tickify_joindate', `Joined ${joinDate}`);
+            
+            applySignInState(username, selectedAvatarId, bio, city, `Joined ${joinDate}`);
+            document.getElementById('signin-fullscreen-overlay').style.display = 'none';
+            logToMonitor(`Signed in as ${username}`, 'success');
+        }
+
+        function skipSignIn() {
+            document.getElementById('signin-fullscreen-overlay').style.display = 'none';
+            logToMonitor("Sign in skipped", "system");
+        }
+
+        function checkExistingSignIn() {
+            const username = localStorage.getItem('tickify_username');
+            const avatar = localStorage.getItem('tickify_avatar');
+            const bio = localStorage.getItem('tickify_bio') || "Lovin' concert nights and matcha lattes ✨";
+            const city = localStorage.getItem('tickify_city') || "London";
+            const joinDate = localStorage.getItem('tickify_joindate') || "Joined Jun 2026";
+            if (username && avatar) {
+                applySignInState(username, avatar, bio, city, joinDate);
+                document.getElementById('signin-fullscreen-overlay').style.display = 'none';
+            }
+        }
+
+        function applySignInState(username, avatarId, bio, city, joinDate) {
+            document.getElementById('profile-signin-btn').style.display = 'none';
+            const badge = document.getElementById('header-profile-badge');
+            badge.style.display = 'flex';
+            
+            document.getElementById('header-avatar-container').innerHTML = avatarSvgs[avatarId] || avatarSvgs.avatar1;
+            document.getElementById('header-username-text').innerText = username;
+            
+            // Auto fill Customer ID inside checkout summary and lock it to match logged-in user
+            const customerIdInput = document.getElementById('customerId');
+            if (customerIdInput) {
+                customerIdInput.value = username;
+                customerIdInput.readOnly = true;
+                customerIdInput.style.backgroundColor = '#f1f1f1';
+                customerIdInput.style.cursor = 'not-allowed';
+            }
+
+            // Update profile page elements
+            document.getElementById('profile-page-avatar').innerHTML = avatarSvgs[avatarId] || avatarSvgs.avatar1;
+            document.getElementById('profile-page-username').innerText = username;
+            document.getElementById('profile-page-bio').innerText = bio;
+            document.getElementById('profile-page-city').innerText = city;
+            document.getElementById('profile-page-joined').innerText = joinDate;
+
+            // Also initialize edit fields
+            document.getElementById('edit-username-input').value = username;
+            document.getElementById('edit-bio-input').value = bio;
+            document.getElementById('edit-city-select').value = city;
+            selectedEditAvatarId = avatarId;
+            updateEditAvatarSelection();
+            
+            // Load bookings
+            renderBookingsHistory();
+        }
+
+        function openSignInModal() {
+            document.getElementById('signin-fullscreen-overlay').style.display = 'flex';
+        }
+
+        function submitSignOut() {
+            localStorage.removeItem('tickify_username');
+            localStorage.removeItem('tickify_avatar');
+            localStorage.removeItem('tickify_bio');
+            localStorage.removeItem('tickify_city');
+            localStorage.removeItem('tickify_joindate');
+            localStorage.removeItem('tickify_bookings');
+            
+            // Close dropdown
+            document.getElementById('profile-dropdown-menu').style.display = 'none';
+            // Hide profile page view
+            document.getElementById('profile-view').style.display = 'none';
+
+            // Show signin button in header
+            document.getElementById('profile-signin-btn').style.display = 'block';
+            document.getElementById('header-profile-badge').style.display = 'none';
+            const customerIdInput = document.getElementById('customerId');
+            if (customerIdInput) {
+                customerIdInput.value = 'john_doe_99';
+                customerIdInput.readOnly = false;
+                customerIdInput.style.backgroundColor = '';
+                customerIdInput.style.cursor = '';
+            }
+            
+            // Show fullscreen signin overlay
+            document.getElementById('signin-fullscreen-overlay').style.display = 'flex';
+            // Reset input values
+            document.getElementById('signin-username-input').value = 'blossom_girl';
+            document.getElementById('signin-bio-input').value = 'Matcha and live music lover 🌸';
+            document.getElementById('signin-city-select').value = 'London';
+            selectedAvatarId = 'avatar1';
+            document.querySelectorAll('#signin-fullscreen-overlay .avatar-option').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('avatar-opt-1').classList.add('selected');
+            
+            logToMonitor("Signed out successfully.", "warning");
+        }
+
+        function toggleProfileDropdown(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('profile-dropdown-menu');
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleEditProfileForm() {
+            const form = document.getElementById('edit-profile-form');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                document.getElementById('edit-username-input').value = localStorage.getItem('tickify_username') || '';
+                document.getElementById('edit-bio-input').value = localStorage.getItem('tickify_bio') || '';
+                document.getElementById('edit-city-select').value = localStorage.getItem('tickify_city') || 'London';
+                selectedEditAvatarId = localStorage.getItem('tickify_avatar') || 'avatar1';
+                updateEditAvatarSelection();
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+        function saveProfileChanges() {
+            const username = document.getElementById('edit-username-input').value.trim();
+            if (!username) {
+                alert("Username cannot be empty!");
+                return;
+            }
+            const bio = document.getElementById('edit-bio-input').value.trim();
+            const city = document.getElementById('edit-city-select').value;
+            const joinDate = localStorage.getItem('tickify_joindate') || "Joined Jun 2026";
+            
+            localStorage.setItem('tickify_username', username);
+            localStorage.setItem('tickify_avatar', selectedEditAvatarId);
+            localStorage.setItem('tickify_bio', bio);
+            localStorage.setItem('tickify_city', city);
+            
+            applySignInState(username, selectedEditAvatarId, bio, city, joinDate);
+            toggleEditProfileForm();
+            logToMonitor("Profile details updated successfully!", "success");
+        }
+
+        function showProfileView(scrollToId = null) {
+            document.getElementById('profile-dropdown-menu').style.display = 'none';
+            document.getElementById('concert-selection-view').style.display = 'none';
+            document.getElementById('buzz-news-view').style.display = 'none';
+            document.getElementById('showtime-selection-view').style.display = 'none';
+            document.getElementById('booking-view').style.display = 'none';
+            document.getElementById('bms-bottom-bar').style.display = 'none';
+            closeCheckoutDrawer();
+
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            document.getElementById('profile-view').style.display = 'block';
+            logToMonitor("Opened User Profile page", "system");
+
+            renderBookingsHistory();
+
+            if (scrollToId) {
+                setTimeout(() => {
+                    const el = document.getElementById(scrollToId);
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+
+        function logToMonitor(text, type = 'system') {
+            const container = document.getElementById('saga-monitor-logs');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `<span class="log-time">[${time}]</span> ${text}`;
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function fetchEvents() {
+            fetch(`${API_BASE_URL}/api/events`)
+                .then(res => res.json())
+                .then(events => {
+                    allEvents = events;
+                    renderEventsGrid();
+                })
+                .catch(err => {
+                    console.error("Error fetching events:", err);
+                    logToMonitor("Failed to load event list from backend. Using mock local events.", "warning");
+                    allEvents = MOCK_EVENTS;
+                    renderEventsGrid();
+                });
+        }
+
+        function renderEventsGrid() {
+            const container = document.getElementById('concerts-container');
+            container.innerHTML = '';
+
+            // Apply filters: category, city, search query
+            const filtered = allEvents.filter(e => {
+                const matchCategory = e.category === activeCategory;
+                const matchCity = activeCity === "ALL" || e.city === activeCity;
+                const matchSearch = searchQuery === "" || 
+                                    e.title.toLowerCase().includes(searchQuery) || 
+                                    e.description.toLowerCase().includes(searchQuery) ||
+                                    e.venue.toLowerCase().includes(searchQuery);
+                return matchCategory && matchCity && matchSearch;
+            });
+
+            // Update Counter Text
+            document.getElementById('events-grid-counter').innerText = `${filtered.length} Event${filtered.length !== 1 ? 's' : ''} found`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 50px; color: var(--bms-text-muted);">
+                        <h3>No events match your criteria.</h3>
+                        <p style="margin-top: 10px;">Try changing the city filter, category, or search term.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(event => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.onclick = () => selectConcert(event);
+                card.innerHTML = `
+                    <div class="event-img" style="background-image: url('${getCleanImageUrl(event.imageUrl)}');">
+                        <div class="event-tag">${event.date.split(',')[1] || event.date}</div>
+                    </div>
+                    <div class="event-info">
+                        <h3 class="event-title" title="${event.title}">${event.title}</h3>
+                        <p class="event-desc">${event.description}</p>
+                        <div class="event-meta">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <span>${event.venue.split(',')[0]} (${event.city})</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Setup filter listeners
+        function setupFilters() {
+            // Search Input listener
+            const searchInput = document.getElementById('search-events-input');
+            searchInput.addEventListener('keyup', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                if (activeCategory === "buzz") {
+                    // Switch back to search events if searching while on buzz page
+                    const defaultTab = document.querySelector(`.nav-links a:first-child`);
+                    changeCategory('concert', defaultTab);
+                }
+                renderEventsGrid();
+            });
+
+            // Close dropdowns when clicking outside
+            window.addEventListener('click', (e) => {
+                if (!e.target.closest('.city-selector')) {
+                    document.getElementById('city-dropdown').style.display = 'none';
+                }
+                if (!e.target.closest('#header-profile-badge') && !e.target.closest('#profile-dropdown-menu')) {
+                    document.getElementById('profile-dropdown-menu').style.display = 'none';
+                }
+            });
+        }
+
+        // Toggle City picker list
+        function toggleCityDropdown(event) {
+            event.stopPropagation();
+            const list = document.getElementById('city-dropdown');
+            list.style.display = list.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Select City from list
+        function selectCity(city) {
+            activeCity = city;
+            document.getElementById('header-city-name').innerText = city === "ALL" ? "All Cities" : city;
+            document.getElementById('city-dropdown').style.display = 'none';
+            logToMonitor(`Filtered location to: ${city}`, 'system');
+            
+            if (activeCategory === "buzz") {
+                const defaultTab = document.querySelector(`.nav-links a:first-child`);
+                changeCategory('concert', defaultTab);
+            }
+            renderEventsGrid();
+        }
+
+        // Change Category from Nav tabs
+        function changeCategory(category, element) {
+            // Remove active classes
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            element.classList.add('active');
+
+            activeCategory = category;
+            appliedDiscountPercent = 0; // Reset discount on category change
+            
+            const eventView = document.getElementById('concert-selection-view');
+            const buzzView = document.getElementById('buzz-news-view');
+            const showtimeView = document.getElementById('showtime-selection-view');
+            const bookingView = document.getElementById('booking-view');
+            const bottomBar = document.getElementById('bms-bottom-bar');
+            
+            showtimeView.style.display = 'none';
+            bookingView.style.display = 'none';
+            bottomBar.style.display = 'none';
+            document.getElementById('profile-view').style.display = 'none';
+            closeCheckoutDrawer();
+
+            if (category === "buzz") {
+                eventView.style.display = 'none';
+                buzzView.style.display = 'block';
+                logToMonitor("Opened BMS Buzz Feed", "system");
+            } else {
+                eventView.style.display = 'block';
+                buzzView.style.display = 'none';
+                
+                // Update title headers dynamically
+                let title = "Concerts & Event Tickets";
+                if (category === "movie") title = "Latest Movies";
+                else if (category === "play") title = "Plays & Theaters";
+                else if (category === "sport") title = "Live Sports Championships";
+                else if (category === "activity") title = "Activities & Creative Workshops";
+                
+                document.getElementById('category-section-title').innerText = title;
+                logToMonitor(`Filtered category to: ${category}`, 'system');
+                renderEventsGrid();
+            }
+        }
+
+        function selectConcert(event) {
+            currentConcert = event;
+            document.getElementById('concert-selection-view').style.display = 'none';
+            document.getElementById('showtime-selection-view').style.display = 'block';
+            document.getElementById('booking-view').style.display = 'none';
+            document.getElementById('bms-bottom-bar').style.display = 'none';
+            
+            document.getElementById('showtime-event-title').innerText = event.title;
+            document.getElementById('showtime-event-desc').innerText = event.description;
+            document.getElementById('showtime-banner-img').style.backgroundImage = `url('${getCleanImageUrl(event.imageUrl)}')`;
+
+            generateDates();
+            generateVenuesAndShowtimes(event);
+        }
+
+        function generateDates() {
+            const container = document.getElementById('showtime-date-selector');
+            container.innerHTML = '';
+            
+            const days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+            const months = ["JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            
+            let startDate = new Date();
+            selectedDateStr = startDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+            for(let i=0; i<6; i++) {
+                let d = new Date();
+                d.setDate(startDate.getDate() + i);
+                
+                const tab = document.createElement('div');
+                tab.className = `date-tab ${i === 0 ? 'active' : ''}`;
+                const dateLabel = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                tab.onclick = () => {
+                    document.querySelectorAll('.date-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    selectedDateStr = dateLabel;
+                    logToMonitor(`Selected booking date: ${dateLabel}`, 'system');
+                };
+
+                tab.innerHTML = `
+                    <span class="date-day">${days[d.getDay()]}</span>
+                    <span class="date-num">${d.getDate()}</span>
+                    <span class="date-day" style="font-size: 8px;">${months[d.getMonth()]}</span>
+                `;
+                container.appendChild(tab);
+            }
+        }
+
+        function generateVenuesAndShowtimes(event) {
+            const container = document.getElementById('showtime-venue-list');
+            container.innerHTML = '';
+
+            const venues = [
+                { name: event.venue, address: "Main Arena Hall, Entry Gate 2" },
+                { name: "PVR IMAX Theater - Alternate Arena", address: "City Mall Center, Ground Floor" }
+            ];
+
+            venues.forEach(venue => {
+                const row = document.createElement('div');
+                row.className = 'venue-row';
+                
+                const showtimes = ["12:00 PM", "04:30 PM", "08:00 PM"];
+                let timeButtonsHtml = "";
+                showtimes.forEach(time => {
+                    timeButtonsHtml += `
+                        <button class="showtime-pill" onclick="selectShowtime('${venue.name}', '${time}')">${time}</button>
+                    `;
+                });
+
+                row.innerHTML = `
+                    <div class="venue-info">
+                        <span class="venue-name">${venue.name}</span>
+                        <span class="venue-location">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <span>${venue.address}</span>
+                        </span>
+                    </div>
+                    <div class="showtime-pills">
+                        ${timeButtonsHtml}
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function selectShowtime(venueName, showtime) {
+            selectedTimeStr = showtime;
+            
+            document.getElementById('showtime-selection-view').style.display = 'none';
+            document.getElementById('booking-view').style.display = 'grid';
+            
+            document.getElementById('selected-concert-title').innerText = currentConcert.title;
+            document.getElementById('selected-concert-meta').innerHTML = `${venueName} &bull; ${selectedDateStr} &bull; ${showtime}`;
+            
+            selectedSeats.clear();
+            successfulBookings.clear();
+            failedBookings.clear();
+            appliedDiscountPercent = 0; // Reset coupon on new booking
+            document.getElementById('promoCode').value = '';
+            document.getElementById('promo-message').innerText = '';
+            document.getElementById('breakdown-discount-row').style.display = 'none';
+            updateSeatDetailPanel();
+
+            logToMonitor(`Loading seats layout for ${venueName} at ${showtime}...`, 'system');
+            fetchSeats();
+        }
+
+        function showShowtimeSelectionView() {
+            document.getElementById('showtime-selection-view').style.display = 'block';
+            document.getElementById('booking-view').style.display = 'none';
+            document.getElementById('bms-bottom-bar').style.display = 'none';
+            closeCheckoutDrawer();
+            const preview = document.getElementById('stage-view-preview');
+            if (preview) preview.style.display = 'none';
+        }
+
+        function showEventsView() {
+            activePolls.forEach((interval) => clearInterval(interval));
+            activePolls.clear();
+            currentConcert = null;
+            selectedSeats.clear();
+            document.getElementById('concert-selection-view').style.display = 'block';
+            document.getElementById('showtime-selection-view').style.display = 'none';
+            document.getElementById('booking-view').style.display = 'none';
+            document.getElementById('profile-view').style.display = 'none';
+            document.getElementById('bms-bottom-bar').style.display = 'none';
+            closeCheckoutDrawer();
+            const preview = document.getElementById('stage-view-preview');
+            if (preview) preview.style.display = 'none';
+            fetchEvents();
+        }
+
+        function fetchSeats() {
+            if (!currentConcert) return;
+            fetch(`${API_BASE_URL}/api/events/${currentConcert.id}/seats`)
+                .then(res => res.json())
+                .then(seats => {
+                    seats.forEach(s => {
+                        if (s.currentPrice === undefined || s.currentPrice === null) {
+                            s.currentPrice = s.basePrice;
+                        }
+                        if (persistedBookedSeats.has(s.seatId)) {
+                            s.status = 'CONFIRMED';
+                        }
+                    });
+                    renderSeatingChart(seats);
+                    updateDashboard(seats);
+                })
+                .catch(err => {
+                    console.error("Error loading seats from backend:", err);
+                    logToMonitor("Failed to load live seats. Falling back to local mock seat layout.", "warning");
+                    
+                    // Generate mock seats locally
+                    const mockSeats = [];
+                    const rows = ["A", "B", "C", "D", "E", "F"];
+                    rows.forEach(row => {
+                        let basePrice = 75.00;
+                        if (row === "A" || row === "B") basePrice = 250.00;
+                        else if (row === "C" || row === "D") basePrice = 120.00;
+                        
+                        for (let i = 1; i <= 10; i++) {
+                            const seatName = `${row}${i}`;
+                            const seatId = `mock-${currentConcert.id}-${seatName}`;
+                            
+                            // Load simulated local status if already booked
+                            let status = "OPEN";
+                            if (persistedBookedSeats.has(seatId)) {
+                                status = "CONFIRMED";
+                            } else {
+                                // Deterministically reserve some seats based on name to make it look realistic
+                                const hashVal = (currentConcert.title.charCodeAt(0) + seatName.charCodeAt(0) + i) % 100;
+                                if (hashVal < 25) {
+                                    status = "CONFIRMED";
+                                } else if (hashVal < 35) {
+                                    status = "RESERVED";
+                                }
+                            }
+                            
+                            mockSeats.push({
+                                eventId: currentConcert.id,
+                                seatId: seatId,
+                                seatName: seatName,
+                                status: status,
+                                basePrice: basePrice,
+                                currentPrice: basePrice
+                            });
+                        }
+                    });
+                    
+                    renderSeatingChart(mockSeats);
+                    updateDashboard(mockSeats);
+                });
+        }
+
+        function renderSeatingChart(seats) {
+            const chart = document.getElementById('seating-chart-container');
+            chart.innerHTML = '';
+
+            const rows = {};
+            seats.forEach(seat => {
+                const rowLabel = seat.seatName.charAt(0);
+                if (!rows[rowLabel]) rows[rowLabel] = [];
+                rows[rowLabel].push(seat);
+            });
+
+            const sortedRows = Object.keys(rows).sort();
+            
+            const tiers = [
+                { name: "PLATINUM - $250.00", rows: ["A", "B"] },
+                { name: "GOLD - $120.00", rows: ["C", "D"] },
+                { name: "SILVER - $75.00", rows: ["E", "F"] }
+            ];
+
+            tiers.forEach(tier => {
+                const header = document.createElement('div');
+                header.className = 'tier-header';
+                header.innerText = tier.name;
+                chart.appendChild(header);
+
+                tier.rows.forEach(rowLabel => {
+                    if (!rows[rowLabel]) return;
+
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'seat-row';
+                    
+                    const labelSpan = document.createElement('span');
+                    labelSpan.className = 'row-label';
+                    labelSpan.innerText = rowLabel;
+                    rowDiv.appendChild(labelSpan);
+
+                    rows[rowLabel].sort((a, b) => {
+                        const aNum = parseInt(a.seatName.substring(1));
+                        const bNum = parseInt(b.seatName.substring(1));
+                        return aNum - bNum;
+                    });
+
+                    rows[rowLabel].forEach(seat => {
+                        const seatButton = document.createElement('div');
+                        seatButton.className = `seat ${seat.status}`;
+                        seatButton.innerText = seat.seatName.substring(1);
+                        
+                        if (selectedSeats.has(seat.seatId)) {
+                            seatButton.classList.add('selected');
+                            const cached = selectedSeats.get(seat.seatId);
+                            selectedSeats.set(seat.seatId, { ...seat, loadingPrice: false, currentPrice: cached.currentPrice || seat.basePrice });
+                        }
+
+                        if (seat.status === 'OPEN') {
+                            seatButton.onclick = () => selectSeat(seat, seatButton);
+                        }
+
+                        rowDiv.appendChild(seatButton);
+                    });
+
+                    chart.appendChild(rowDiv);
+                });
+            });
+        }
+
+        function updateDashboard(seats) {
+            const available = seats.filter(s => s.status === 'OPEN').length;
+            const booked = seats.filter(s => s.status === 'CONFIRMED').length;
+            
+            document.getElementById('stat-available').innerText = available;
+            document.getElementById('stat-booked').innerText = booked;
+
+            if (seats.length > 0) {
+                let totalBase = 0;
+                let totalCurrent = 0;
+                seats.forEach(s => {
+                    totalBase += s.basePrice;
+                    totalCurrent += s.currentPrice;
+                });
+                let avgMult = totalCurrent / totalBase;
+                document.getElementById('stat-multiplier').innerText = `${avgMult.toFixed(2)}x`;
+            } else {
+                document.getElementById('stat-multiplier').innerText = `1.00x`;
+            }
+        }
+
+        function updateStageLabel(seatName) {
+            const label = document.getElementById('stage-view-label');
+            const performer = document.getElementById('stage-performer');
+            const glow = document.getElementById('performer-glow');
+            const spotLeft = document.getElementById('spotlight-left');
+            const spotRight = document.getElementById('spotlight-right');
+            const fgSeats = document.getElementById('stage-foreground-seats');
+            
+            if (!label) return;
+            const rowLabel = seatName.charAt(0);
+            
+            let text = "";
+            if (rowLabel === 'A' || rowLabel === 'B') {
+                text = `Seat ${seatName} (Row ${rowLabel}): Ultimate Front-Row VVIP Experience!`;
+                
+                if (performer) {
+                    performer.style.bottom = "28px";
+                    performer.style.transform = "translateX(-50%) scale(1.35)";
+                }
+                if (glow) {
+                    glow.style.background = "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,117,143,0.65) 45%, rgba(255,117,143,0) 70%)";
+                }
+                if (spotLeft) spotLeft.style.transform = "rotate(24deg) scale(1.25)";
+                if (spotRight) spotRight.style.transform = "rotate(-24deg) scale(1.25)";
+                if (fgSeats) fgSeats.innerHTML = "";
+                
+            } else if (rowLabel === 'C' || rowLabel === 'D') {
+                text = `Seat ${seatName} (Row ${rowLabel}): Great Mid-Tier Soundstage View`;
+                
+                if (performer) {
+                    performer.style.bottom = "18px";
+                    performer.style.transform = "translateX(-50%) scale(1.0)";
+                }
+                if (glow) {
+                    glow.style.background = "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,117,143,0.4) 40%, rgba(255,117,143,0) 70%)";
+                }
+                if (spotLeft) spotLeft.style.transform = "rotate(18deg) scale(1.0)";
+                if (spotRight) spotRight.style.transform = "rotate(-18deg) scale(1.0)";
+                
+                if (fgSeats) {
+                    let seatsHtml = "";
+                    for (let i = 0; i < 8; i++) {
+                        seatsHtml += `<div style="width: 14px; height: 14px; border-radius: 50% 50% 0 0; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.08);"></div>`;
+                    }
+                    fgSeats.innerHTML = seatsHtml;
+                }
+                
+            } else {
+                text = `Seat ${seatName} (Row ${rowLabel}): Standard Balcony View`;
+                
+                if (performer) {
+                    performer.style.bottom = "10px";
+                    performer.style.transform = "translateX(-50%) scale(0.72)";
+                }
+                if (glow) {
+                    glow.style.background = "radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,117,143,0.2) 40%, rgba(255,117,143,0) 70%)";
+                }
+                if (spotLeft) spotLeft.style.transform = "rotate(12deg) scale(0.75)";
+                if (spotRight) spotRight.style.transform = "rotate(-12deg) scale(0.75)";
+                
+                if (fgSeats) {
+                    let seatsHtml = "";
+                    for (let i = 0; i < 12; i++) {
+                        const height = i % 2 === 0 ? "10px" : "7px";
+                        const opacity = i % 2 === 0 ? "0.2" : "0.1";
+                        seatsHtml += `<div style="width: 10px; height: ${height}; border-radius: 50% 50% 0 0; background: rgba(255,255,255,${opacity}); border: 1px solid rgba(255,255,255,0.04);"></div>`;
+                    }
+                    fgSeats.innerHTML = seatsHtml;
+                }
+            }
+            label.innerText = text;
+        }
+
+        function selectSeat(seat, element) {
+            const seatId = seat.seatId;
+            const stagePreview = document.getElementById('stage-view-preview');
+
+            if (selectedSeats.has(seatId)) {
+                selectedSeats.delete(seatId);
+                element.classList.remove('selected');
+                logToMonitor(`Deselected seat ${seat.seatName}.`, 'system');
+                updateSeatDetailPanel();
+
+                if (selectedSeats.size === 0 && stagePreview) {
+                    stagePreview.style.display = 'none';
+                } else if (selectedSeats.size > 0) {
+                    const nextSeat = Array.from(selectedSeats.values())[selectedSeats.size - 1];
+                    updateStageLabel(nextSeat.seatName);
+                }
+            } else {
+                selectedSeats.set(seatId, { ...seat, loadingPrice: true });
+                element.classList.add('selected');
+                logToMonitor(`Selected seat ${seat.seatName}. Querying live dynamic pricing...`, 'system');
+                updateSeatDetailPanel();
+
+                if (stagePreview) {
+                    stagePreview.style.display = 'block';
+                    updateStageLabel(seat.seatName);
+                }
+
+                fetch(`${API_BASE_URL}/api/events/${currentConcert.id}/seats/${seatId}`)
+                    .then(res => {
+                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                        return res.json();
+                    })
+                    .then(updatedSeat => {
+                        if (selectedSeats.has(seatId)) {
+                            selectedSeats.set(seatId, { ...updatedSeat, loadingPrice: false });
+                            updateSeatDetailPanel();
+                            logToMonitor(`Pricing updated for seat ${seat.seatName}: $${updatedSeat.currentPrice.toFixed(2)}.`, 'success');
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching live pricing:", err);
+                        if (selectedSeats.has(seatId)) {
+                            selectedSeats.set(seatId, { ...seat, loadingPrice: false, currentPrice: seat.basePrice });
+                            updateSeatDetailPanel();
+                        }
+                        logToMonitor(`Failed to query pricing for ${seat.seatName}. Using base.`, 'warning');
+                    });
+            }
+        }
+
+        function updateSeatDetailPanel() {
+            const bottomBar = document.getElementById('bms-bottom-bar');
+            
+            if (selectedSeats.size === 0) {
+                bottomBar.style.display = 'none';
+                return;
+            }
+
+            bottomBar.style.display = 'flex';
+
+            let anyLoading = false;
+            let totalCurrent = 0;
+            let seatNames = [];
+
+            selectedSeats.forEach(seat => {
+                if (seat.loadingPrice) anyLoading = true;
+                totalCurrent += seat.currentPrice || seat.basePrice;
+                seatNames.push(seat.seatName);
+            });
+
+            document.getElementById('bottom-seats-text').innerText = `Seats: ${seatNames.sort().join(', ')} (${selectedSeats.size} ticket${selectedSeats.size > 1 ? 's' : ''})`;
+            document.getElementById('bottom-price-text').innerText = `Total: $${totalCurrent.toFixed(2)}`;
+            document.getElementById('bottom-book-btn').disabled = anyLoading;
+            
+            if (anyLoading) {
+                document.getElementById('bottom-book-btn').innerText = "Loading Live Prices...";
+            } else {
+                document.getElementById('bottom-book-btn').innerText = "Book Selected Seats";
+            }
+        }
+
+        function openCheckoutDrawer() {
+            if (selectedSeats.size === 0) return;
+            
+            const drawer = document.getElementById('checkout-drawer-view');
+            drawer.style.display = 'flex';
+
+            document.getElementById('drawer-title').innerText = currentConcert.title;
+            document.getElementById('drawer-meta').innerText = `${selectedDateStr} &bull; ${selectedTimeStr}`;
+            
+            calculateCheckoutTotal();
+        }
+
+        function closeCheckoutDrawer() {
+            document.getElementById('checkout-drawer-view').style.display = 'none';
+        }
+
+        function calculateCheckoutTotal() {
+            let ticketSubtotal = 0;
+            selectedSeats.forEach(seat => {
+                ticketSubtotal += seat.currentPrice || seat.basePrice;
+            });
+
+            const count = selectedSeats.size;
+            
+            // Internet Handling Fees: $1.50 booking fee + $0.27 tax (total $1.77 per ticket)
+            const bookingFee = 1.50 * count;
+            const taxFee = 0.27 * count;
+            const totalHandling = bookingFee + taxFee;
+
+            // Coupon Discount
+            let discountAmount = 0;
+            if (appliedDiscountPercent > 0) {
+                discountAmount = ticketSubtotal * (appliedDiscountPercent / 100);
+                document.getElementById('breakdown-discount-row').style.display = 'flex';
+                document.getElementById('breakdown-discount-value').innerText = `-$${discountAmount.toFixed(2)}`;
+                document.getElementById('breakdown-discount-label').innerText = `Coupon Discount (${appliedDiscountPercent}%)`;
+            } else {
+                document.getElementById('breakdown-discount-row').style.display = 'none';
+            }
+
+            // Charity contribution
+            const smileDonation = document.getElementById('book-smile-check').checked ? 1.00 : 0.00;
+
+            const payable = (ticketSubtotal - discountAmount) + totalHandling + smileDonation;
+
+            document.getElementById('breakdown-seats-label').innerText = `Tickets (${count})`;
+            document.getElementById('breakdown-seats-value').innerText = `$${ticketSubtotal.toFixed(2)}`;
+            document.getElementById('breakdown-handling-value').innerText = `$${totalHandling.toFixed(2)}`;
+            document.getElementById('breakdown-booking-fee').innerText = `$${bookingFee.toFixed(2)}`;
+            document.getElementById('breakdown-tax-fee').innerText = `$${taxFee.toFixed(2)}`;
+            document.getElementById('breakdown-payable-value').innerText = `$${payable.toFixed(2)}`;
+        }
+
+        function applyPromoCode() {
+            const code = document.getElementById('promoCode').value.trim().toUpperCase();
+            const msg = document.getElementById('promo-message');
+
+            if (code === 'BMS30') {
+                appliedDiscountPercent = 30;
+                msg.style.color = '#2e7d32';
+                msg.innerText = 'Coupon BMS30 applied! 30% discount deducted from tickets.';
+            } else if (code === 'BMS20') {
+                appliedDiscountPercent = 20;
+                msg.style.color = '#2e7d32';
+                msg.innerText = 'Coupon BMS20 applied! 20% discount deducted from tickets.';
+            } else if (code === '') {
+                appliedDiscountPercent = 0;
+                msg.innerText = '';
+            } else {
+                appliedDiscountPercent = 0;
+                msg.style.color = '#c62828';
+                msg.innerText = 'Invalid coupon code! Try BMS30 or BMS20.';
+            }
+
+            calculateCheckoutTotal();
+        }
+
+        function toggleBookASmile() {
+            const check = document.getElementById('book-smile-check');
+            check.checked = !check.checked;
+            calculateCheckoutTotal();
+        }
+
+        document.getElementById('book-smile-check').addEventListener('change', (e) => {
+            e.stopPropagation();
+            calculateCheckoutTotal();
+        });
+
+        function startCheckout() {
+            if (!currentConcert || selectedSeats.size === 0) return;
+
+            const loggedInUser = localStorage.getItem('tickify_username');
+            if (!loggedInUser) {
+                alert("You must be signed in to purchase tickets! Please sign in or create an account.");
+                openSignInModal();
+                return;
+            }
+
+            let customerId = document.getElementById('customerId').value.trim();
+            if (!customerId) {
+                alert("Please enter a valid Customer Username!");
+                return;
+            }
+
+            if (customerId !== loggedInUser) {
+                alert("The purchaser name must match your logged-in username!");
+                document.getElementById('customerId').value = loggedInUser;
+                return;
+            }
+
+            document.getElementById('proceed-pay-btn').disabled = true;
+            document.getElementById('proceed-pay-btn').innerText = "Processing Pay...";
+            
+            successfulBookings.clear();
+            failedBookings.clear();
+
+            if (document.getElementById('sim-double-book').checked) {
+                const firstSeat = Array.from(selectedSeats.values())[0];
+                logToMonitor(`[Simulation] Triggering concurrent double-booking requests for Seat ${firstSeat.seatName}...`, 'warning');
+                
+                let mainCustomerId = customerId;
+                if (document.getElementById('sim-fail-payment').checked) {
+                    mainCustomerId = "fail_payment_" + mainCustomerId;
+                } else if (document.getElementById('sim-fail-ticket').checked) {
+                    mainCustomerId = "fail_ticket_" + mainCustomerId;
+                }
+
+                const token1 = `retry-${currentConcert.id}-${firstSeat.seatId}-alice-${Math.random()}`;
+                const token2 = `retry-${currentConcert.id}-${firstSeat.seatId}-bob-${Math.random()}`;
+
+                logToMonitor(`[User A] Initiating checkout for ${firstSeat.seatName}...`, 'system');
+                fetch(`${API_BASE_URL}/api/checkout`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Retry-ID': token1 },
+                    body: JSON.stringify({ eventId: currentConcert.id, seatId: firstSeat.seatId, customerId: mainCustomerId })
+                })
+                .then(res => {
+                    if (res.status === 409) {
+                        logToMonitor(`[User A] [Conflict] Booking for ${firstSeat.seatName} failed (409 Conflict).`, 'error');
+                        throw new Error("Conflict");
+                    }
+                    return res.json();
+                })
+                .then(response => {
+                    logToMonitor(`[User A] [Success] Lock acquired for ${firstSeat.seatName}. Saga ID: ${response.reservationId}`, 'success');
+                    startSagaPollingForSeat(firstSeat.seatId, firstSeat.seatName, response.reservationId, mainCustomerId);
+                })
+                .catch(err => {
+                    logToMonitor(`[User A] Booking request for ${firstSeat.seatName} failed.`, 'error');
+                    failedBookings.set(firstSeat.seatId, { seatName: firstSeat.seatName, reason: "Conflict" });
+                    checkAllCheckoutsCompleted();
+                });
+
+                setTimeout(() => {
+                    logToMonitor(`[User B] Concurrent checkout request for ${firstSeat.seatName} arriving at server...`, 'warning');
+                    fetch(`${API_BASE_URL}/api/checkout`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-Retry-ID': token2 },
+                        body: JSON.stringify({ eventId: currentConcert.id, seatId: firstSeat.seatId, customerId: "competing_bob" })
+                    })
+                    .then(res => {
+                        if (res.status === 409) {
+                            logToMonitor(`[User B] [Blocked] Concurrency lock active or seat already allocated. Return 409 Conflict!`, 'error');
+                            logToMonitor(`[System] Concurrency check: double-booking successfully prevented.`, 'success');
+                        } else {
+                            return res.json();
+                        }
+                    })
+                    .then(response => {
+                        if (response) {
+                            logToMonitor(`[User B] [Success?] Unexpectedly booked seat.`, 'warning');
+                        }
+                    })
+                    .catch(err => {
+                        logToMonitor(`[User B] Booking request failed as expected.`, 'error');
+                    });
+                }, 50);
+
+                const otherSeats = Array.from(selectedSeats.values()).slice(1);
+                otherSeats.forEach(seat => {
+                    checkoutSeat(seat, customerId);
+                });
+
+                return;
+            }
+
+            selectedSeats.forEach(seat => {
+                checkoutSeat(seat, customerId);
+            });
+        }
+
+        function checkoutSeat(seat, customerId) {
+            let actualCustomerId = customerId;
+            if (document.getElementById('sim-fail-payment').checked) {
+                actualCustomerId = "fail_payment_" + actualCustomerId;
+            } else if (document.getElementById('sim-fail-ticket').checked) {
+                actualCustomerId = "fail_ticket_" + actualCustomerId;
+            }
+
+            logToMonitor(`[Seat ${seat.seatName}] Generating transaction token...`, 'system');
+
+            fetch(`${API_BASE_URL}/api/events/${currentConcert.id}/seats/${seat.seatId}/retry-token`, {
+                method: 'POST'
+            })
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                const token = data.retryToken;
+                currentRetryTokens.set(seat.seatId, token);
+                logToMonitor(`[Seat ${seat.seatName}] Token: ${token.substring(0, 20)}...`, 'success');
+                
+                logToMonitor(`[Seat ${seat.seatName}] Dispatching Saga checkout...`, 'system');
+                return fetch(`${API_BASE_URL}/api/checkout`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Retry-ID': token
+                    },
+                    body: JSON.stringify({
+                        eventId: currentConcert.id,
+                        seatId: seat.seatId,
+                        customerId: actualCustomerId
+                    })
+                });
+            })
+            .then(res => {
+                if (res.status === 409) {
+                    logToMonitor(`[Seat ${seat.seatName}] Conflict (409): Lock active or seat already allocated.`, 'warning');
+                    throw new Error("Conflict");
+                }
+                return res.json();
+            })
+            .then(response => {
+                logToMonitor(`[Seat ${seat.seatName}] Reserved! Saga Reservation ID: ${response.reservationId}`, 'success');
+                logToMonitor(`[Seat ${seat.seatName}] SAGA: Emitted reservation.reserved to Kafka.`, 'warning');
+                startSagaPollingForSeat(seat.seatId, seat.seatName, response.reservationId, actualCustomerId);
+            })
+            .catch(err => {
+                console.error(`Checkout error for seat ${seat.seatName}:`, err);
+                if (err.message === "Conflict") {
+                    logToMonitor(`[Seat ${seat.seatName}] Checkout failed due to conflict.`, 'error');
+                    failedBookings.set(seat.seatId, { seatName: seat.seatName, reason: "Conflict" });
+                    checkAllCheckoutsCompleted();
+                    fetchSeats();
+                } else {
+                    logToMonitor(`[Seat ${seat.seatName}] Backend connection failed. Starting offline local mock Saga flow.`, 'warning');
+                    const mockReservationId = `local-saga-${Math.random().toString(36).substr(2, 9)}`;
+                    logToMonitor(`[Seat ${seat.seatName}] [Local Mock] Token generated locally.`, 'success');
+                    logToMonitor(`[Seat ${seat.seatName}] [Local Mock] Saga checkout initiated locally.`, 'system');
+                    logToMonitor(`[Seat ${seat.seatName}] [Local Mock] Reserved! Saga Reservation ID: ${mockReservationId}`, 'success');
+                    startSagaPollingForSeat(seat.seatId, seat.seatName, mockReservationId, actualCustomerId);
+                }
+            });
+        }
+
+        function startSagaPollingForSeat(seatId, seatName, reservationId, customerId) {
+            if (activePolls.has(seatId)) clearInterval(activePolls.get(seatId));
+
+            let attempts = 0;
+            logToMonitor(`[Seat ${seatName}] Monitoring Saga progression via Kafka consumer polling...`, 'system');
+
+            const interval = setInterval(() => {
+                attempts++;
+                if (attempts > 15) {
+                    clearInterval(interval);
+                    activePolls.delete(seatId);
+                    logToMonitor(`[Seat ${seatName}] Transaction Timeout: Saga took too long.`, 'error');
+                    failedBookings.set(seatId, { seatName, reason: "Timeout" });
+                    checkAllCheckoutsCompleted();
+                    fetchSeats();
+                    return;
+                }
+
+                fetch(`${API_BASE_URL}/api/events/${currentConcert.id}/seats/${seatId}`)
+                    .then(res => res.json())
+                    .then(seat => {
+                        if (seat.status === 'CONFIRMED') {
+                            clearInterval(interval);
+                            activePolls.delete(seatId);
+                            logToMonitor(`[Seat ${seatName}] KAFKA: payment.captured consumed. Status -> CONFIRMED.`, 'success');
+                            logToMonitor(`[Seat ${seatName}] Ticket compiled successfully!`, 'success');
+                            
+                            seat.reservationId = reservationId;
+                            seat.customerId = customerId;
+                            successfulBookings.set(seatId, seat);
+                            
+                            checkAllCheckoutsCompleted();
+                            fetchSeats();
+                        }
+                        else if (seat.status === 'OPEN') {
+                            clearInterval(interval);
+                            activePolls.delete(seatId);
+                            logToMonitor(`[Seat ${seatName}] COMPENSATION: seat.release.requested processed. Seat -> OPEN.`, 'error');
+                            logToMonitor(`[Seat ${seatName}] TRANSACTION ROLLED BACK SUCCESSFULLY.`, 'system');
+                            
+                            failedBookings.set(seatId, { seatName, reason: "Compensated / Rolled back" });
+                            
+                            checkAllCheckoutsCompleted();
+                            fetchSeats();
+                        }
+                        else {
+                            if (attempts === 2) {
+                                logToMonitor(`[Seat ${seatName}] KAFKA: reservation.reserved consumed by Payment Service.`, 'system');
+                                logToMonitor(`[Seat ${seatName}] Gateway charging credit card/wallet...`, 'system');
+                            }
+                            if (attempts === 5) {
+                                logToMonitor(`[Seat ${seatName}] Payment authorized. Emitting payment.captured...`, 'success');
+                                logToMonitor(`[Seat ${seatName}] TICKET: Compiling PDF ticket template...`, 'system');
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.error(`Polling error for seat ${seatName}, using mock polling progression:`, err);
+                        // Mock local polling progression based on simulation checkboxes!
+                        const failPayment = customerId.startsWith("fail_payment_");
+                        const failTicket = customerId.startsWith("fail_ticket_");
+                        
+                        if (attempts === 2) {
+                            logToMonitor(`[Seat ${seatName}] [Local Mock] KAFKA: reservation.reserved consumed by Payment Service.`, 'system');
+                            logToMonitor(`[Seat ${seatName}] [Local Mock] Gateway charging credit card/wallet...`, 'system');
+                        }
+                        
+                        if (failPayment) {
+                            if (attempts === 4) {
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] Payment charging failed! (Simulation Mode)`, 'error');
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] SAGA: Emitting payment.failed event to Kafka.`, 'error');
+                            }
+                            if (attempts === 6) {
+                                clearInterval(interval);
+                                activePolls.delete(seatId);
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] COMPENSATION: seat.release.requested processed. Seat -> OPEN.`, 'error');
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] TRANSACTION ROLLED BACK SUCCESSFULLY.`, 'system');
+                                
+                                failedBookings.set(seatId, { seatName, reason: "Payment Failed" });
+                                checkAllCheckoutsCompleted();
+                                fetchSeats();
+                            }
+                        } else if (failTicket) {
+                            if (attempts === 4) {
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] Payment authorized. Emitting payment.captured...`, 'success');
+                            }
+                            if (attempts === 6) {
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] TICKET: Compiling PDF ticket template...`, 'system');
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] Ticket PDF compilation failed! (Simulation Mode)`, 'error');
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] SAGA: Emitting ticket.generation.failed event to Kafka.`, 'error');
+                            }
+                            if (attempts === 8) {
+                                clearInterval(interval);
+                                activePolls.delete(seatId);
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] COMPENSATION: payment.reversed & seat.release.requested processed. Seat -> OPEN.`, 'error');
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] TRANSACTION ROLLED BACK SUCCESSFULLY.`, 'system');
+                                
+                                failedBookings.set(seatId, { seatName, reason: "Ticket Generation Failed" });
+                                checkAllCheckoutsCompleted();
+                                fetchSeats();
+                            }
+                        } else {
+                            // Successful flow
+                            if (attempts === 4) {
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] Payment authorized. Emitting payment.captured...`, 'success');
+                            }
+                            if (attempts === 6) {
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] TICKET: Compiling PDF ticket template...`, 'system');
+                            }
+                            if (attempts === 8) {
+                                clearInterval(interval);
+                                activePolls.delete(seatId);
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] KAFKA: payment.captured consumed. Status -> CONFIRMED.`, 'success');
+                                logToMonitor(`[Seat ${seatName}] [Local Mock] Ticket compiled successfully!`, 'success');
+                                
+                                const seatData = {
+                                    eventId: currentConcert.id,
+                                    seatId: seatId,
+                                    seatName: seatName,
+                                    status: "CONFIRMED",
+                                    basePrice: selectedSeats.get(seatId).basePrice,
+                                    currentPrice: selectedSeats.get(seatId).currentPrice || selectedSeats.get(seatId).basePrice,
+                                    reservationId: reservationId,
+                                    customerId: customerId
+                                };
+                                successfulBookings.set(seatId, seatData);
+                                
+                                checkAllCheckoutsCompleted();
+                                fetchSeats();
+                            }
+                        }
+                    });
+            }, 1000);
+
+            activePolls.set(seatId, interval);
+        }
+
+        function checkAllCheckoutsCompleted() {
+            const totalSelected = selectedSeats.size;
+            const completedCount = successfulBookings.size + failedBookings.size;
+
+            if (completedCount >= totalSelected) {
+                document.getElementById('proceed-pay-btn').disabled = false;
+                document.getElementById('proceed-pay-btn').innerText = "Proceed to Pay";
+                
+                closeCheckoutDrawer();
+
+                if (successfulBookings.size > 0) {
+                    showCombinedTicketModal();
+                } else {
+                    alert("All reservation attempts failed or were rolled back. See the logs for details.");
+                }
+                
+                selectedSeats.clear();
+                updateSeatDetailPanel();
+            }
+        }
+
+        function showCombinedTicketModal() {
+            // Save the booking to profile history first
+            saveBookingToHistory();
+
+            const listContainer = document.getElementById('ticket-list-container');
+            listContainer.innerHTML = '';
+
+            let firstBooking = null;
+            let totalPricePaid = 0;
+
+            successfulBookings.forEach((seat, seatId) => {
+                if (!firstBooking) firstBooking = seat;
+                
+                const finalPrice = seat.finalPrice || seat.currentPrice || seat.basePrice;
+                totalPricePaid += finalPrice;
+
+                const ticketItem = document.createElement('div');
+                ticketItem.style.borderBottom = '1px dashed rgba(0, 0, 0, 0.1)';
+                ticketItem.style.paddingBottom = '8px';
+                ticketItem.style.marginBottom = '8px';
+                ticketItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span style="font-weight: 700; color: var(--bms-text-dark); font-size: 15px;">Seat ${seat.seatName}</span>
+                        <span style="font-family: var(--font-mono); font-size: 13px; color: var(--bms-crimson); font-weight: 700;">$${finalPrice.toFixed(2)}</span>
+                    </div>
+                    <div style="font-size: 9px; color: var(--bms-text-muted); font-family: var(--font-mono); word-break: break-all;">
+                        ID: ${seat.reservationId}
+                    </div>
+                `;
+                listContainer.appendChild(ticketItem);
+            });
+
+            // Add internet handling fee, donation and coupon discounts to ticket display
+            const count = successfulBookings.size;
+            const bookingFee = 1.50 * count;
+            const taxFee = 0.27 * count;
+            const smileDonation = document.getElementById('book-smile-check').checked ? 1.00 : 0.00;
+            
+            let discountAmount = 0;
+            if (appliedDiscountPercent > 0) {
+                discountAmount = totalPricePaid * (appliedDiscountPercent / 100);
+            }
+            
+            const totalWithFees = (totalPricePaid - discountAmount) + bookingFee + taxFee + smileDonation;
+
+            document.getElementById('ticket-event-val').innerText = currentConcert.title;
+            
+            let cleanCust = firstBooking ? firstBooking.customerId : 'User';
+            if (cleanCust.startsWith("fail_payment_")) cleanCust = cleanCust.replace("fail_payment_", "");
+            if (cleanCust.startsWith("fail_ticket_")) cleanCust = cleanCust.replace("fail_ticket_", "");
+            if (cleanCust.indexOf('_') > 0) cleanCust = cleanCust.split('_')[0];
+            document.getElementById('ticket-customer-val').innerText = cleanCust;
+
+            document.getElementById('ticket-price-val').innerText = `$${totalWithFees.toFixed(2)} (Incl. Fees)`;
+            document.getElementById('ticket-date-val').innerText = new Date().toLocaleDateString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric'
+            });
+
+            const reservationIdForBarcode = firstBooking ? firstBooking.reservationId.substring(0, 8) : 'multiple';
+            const uniqueBarcode = 'https://cdn.ticketbooking.com/barcodes/tkt-' + reservationIdForBarcode + '.png';
+            document.getElementById('barcode-url-text').innerText = uniqueBarcode;
+
+            document.getElementById('ticket-modal-view').style.display = 'flex';
+        }
+
+        function closeTicketModal() {
+            document.getElementById('ticket-modal-view').style.display = 'none';
+            document.getElementById('bottom-book-btn').disabled = false;
+            
+            selectedSeats.clear();
+            successfulBookings.clear();
+            failedBookings.clear();
+            
+            document.getElementById('bms-bottom-bar').style.display = 'none';
+            const preview = document.getElementById('stage-view-preview');
+            if (preview) preview.style.display = 'none';
+            if (currentConcert) fetchSeats();
+        }
+
+        // Save booking details to localStorage for Profile page
+        function saveBookingToHistory() {
+            if (!currentConcert || successfulBookings.size === 0) return;
+
+            const count = successfulBookings.size;
+            let totalPricePaid = 0;
+            const seatsList = [];
+            let firstBooking = null;
+
+            successfulBookings.forEach((seat, seatId) => {
+                if (!firstBooking) firstBooking = seat;
+                const finalPrice = seat.finalPrice || seat.currentPrice || seat.basePrice || currentConcert.price || 0;
+                totalPricePaid += finalPrice;
+                seatsList.push(seat.seatName);
+                persistedBookedSeats.add(seatId);
+            });
+
+            const bookingFee = 1.50 * count;
+            const taxFee = 0.27 * count;
+            const smileDonation = document.getElementById('book-smile-check').checked ? 1.00 : 0.00;
+            
+            let discountAmount = 0;
+            if (appliedDiscountPercent > 0) {
+                discountAmount = totalPricePaid * (appliedDiscountPercent / 100);
+            }
+            
+            const totalWithFees = (totalPricePaid - discountAmount) + bookingFee + taxFee + smileDonation;
+
+            // Generate barcode URL
+            const reservationIdForBarcode = firstBooking ? firstBooking.reservationId.substring(0, 8) : 'multiple';
+            const uniqueBarcode = 'https://cdn.ticketbooking.com/barcodes/tkt-' + reservationIdForBarcode + '.png';
+
+            // Create booking object
+            const booking = {
+                bookingId: firstBooking ? firstBooking.reservationId : 'tkt-' + Date.now(),
+                eventTitle: currentConcert.title,
+                category: currentConcert.category || activeCategory,
+                venue: currentConcert.venue,
+                city: currentConcert.city,
+                imageUrl: currentConcert.imageUrl,
+                seats: seatsList,
+                price: totalWithFees,
+                date: selectedDateStr || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                time: selectedTimeStr || "7:30 PM",
+                customerName: document.getElementById('customerId').value.trim() || 'User',
+                barcodeUrl: uniqueBarcode,
+                bookingFee: bookingFee,
+                taxFee: taxFee,
+                smileDonation: smileDonation,
+                discountAmount: discountAmount,
+                subtotal: totalPricePaid,
+                timestamp: Date.now()
+            };
+
+            // Get existing bookings from localStorage
+            let bookings = [];
+            try {
+                const stored = localStorage.getItem('tickify_bookings');
+                if (stored) bookings = JSON.parse(stored);
+            } catch(e) {
+                console.error("Error reading tickify_bookings from localStorage", e);
+            }
+
+            // Avoid double-saving the exact same bookingId
+            if (!bookings.some(b => b.bookingId === booking.bookingId)) {
+                bookings.unshift(booking); // newest first
+                localStorage.setItem('tickify_bookings', JSON.stringify(bookings));
+                logToMonitor(`Booking history saved to profile! (${count} seat(s))`, 'success');
+            }
+        }
+
+        // Render bookings gallery in the profile view
+        function renderBookingsHistory() {
+            const grid = document.getElementById('bookings-history-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            let bookings = [];
+            try {
+                const stored = localStorage.getItem('tickify_bookings');
+                if (stored) bookings = JSON.parse(stored);
+            } catch(e) {
+                console.error("Error reading bookings from localStorage", e);
+            }
+
+            if (bookings.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 45px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; border: 1.5px dashed var(--bms-border); border-radius: 20px; background-color: #fafafa; margin-top: 10px;">
+                        <div style="font-size: 50px;">🌸</div>
+                        <h4 style="font-family: var(--font-heading); font-size: 18px; color: var(--bms-text-dark); margin: 0;">No bookings yet!</h4>
+                        <p style="font-size: 13px; color: var(--bms-text-muted); max-width: 320px; line-height: 1.4; margin: 0;">Explore Tickify.co events and find your next aesthetic experience!</p>
+                        <button class="btn-signin" style="padding: 8px 20px; font-size: 12px; font-weight: 700; margin-top: 5px;" onclick="changeCategory('concert', document.querySelector('.nav-links a:first-child'))">Find Events</button>
+                    </div>
+                `;
+                return;
+            }
+
+            bookings.forEach(booking => {
+                const card = document.createElement('div');
+                card.className = 'booking-history-card';
+                card.innerHTML = `
+                    <div class="booking-card-image" style="background-image: url('${getCleanImageUrl(booking.imageUrl) || 'images/default-event.png'}');">
+                        <span class="booking-card-tag">${(booking.category || 'EVENT').toUpperCase()}</span>
+                    </div>
+                    <div class="booking-card-content">
+                        <h4 class="booking-card-title" title="${booking.eventTitle}">${booking.eventTitle}</h4>
+                        <div class="booking-card-meta">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                            <span>${booking.city || 'London'}</span>
+                        </div>
+                        <div class="booking-card-meta">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="4"></line><line x1="8" y1="2" x2="8" y2="4"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            <span>${booking.date} &bull; ${booking.time}</span>
+                        </div>
+                        <div class="booking-card-seats" style="margin-top: 5px;">Seats: ${booking.seats.join(', ')}</div>
+                        <div class="booking-card-footer" style="margin-top: 10px;">
+                            <span class="booking-card-price" style="font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--bms-text-dark);">$${booking.price.toFixed(2)}</span>
+                            <button class="btn-view-receipt" onclick="viewHistoricalReceipt('${booking.bookingId}')">View Receipt</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // View historical receipt inside the standard receipt modal
+        function viewHistoricalReceipt(bookingId) {
+            let bookings = [];
+            try {
+                const stored = localStorage.getItem('tickify_bookings');
+                if (stored) bookings = JSON.parse(stored);
+            } catch(e) {
+                console.error("Error reading tickify_bookings", e);
+            }
+
+            const booking = bookings.find(b => b.bookingId === bookingId);
+            if (!booking) {
+                alert("Ticket receipt not found!");
+                return;
+            }
+
+            // Populate modal fields
+            document.getElementById('ticket-event-val').innerText = booking.eventTitle;
+            
+            let cleanCust = booking.customerName || localStorage.getItem('tickify_username') || 'User';
+            if (cleanCust.startsWith("fail_payment_")) cleanCust = cleanCust.replace("fail_payment_", "");
+            if (cleanCust.startsWith("fail_ticket_")) cleanCust = cleanCust.replace("fail_ticket_", "");
+            if (cleanCust.indexOf('_') > 0) cleanCust = cleanCust.split('_')[0];
+            document.getElementById('ticket-customer-val').innerText = cleanCust;
+
+            document.getElementById('ticket-date-val').innerText = booking.date;
+            document.getElementById('ticket-price-val').innerText = `$${booking.price.toFixed(2)} (Incl. Fees)`;
+            document.getElementById('barcode-url-text').innerText = booking.barcodeUrl || 'https://cdn.ticketbooking.com/barcodes/tkt-' + bookingId.substring(0, 8) + '.png';
+
+            // Populate seats list in modal
+            const listContainer = document.getElementById('ticket-list-container');
+            listContainer.innerHTML = '';
+
+            const seatCount = booking.seats.length;
+            const singleSeatPrice = (booking.subtotal || (booking.price - booking.bookingFee - booking.taxFee - booking.smileDonation + booking.discountAmount)) / seatCount;
+
+            booking.seats.forEach(seatName => {
+                const ticketItem = document.createElement('div');
+                ticketItem.style.borderBottom = '1px dashed rgba(0, 0, 0, 0.1)';
+                ticketItem.style.paddingBottom = '8px';
+                ticketItem.style.marginBottom = '8px';
+                ticketItem.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                        <span style="font-weight: 700; color: var(--bms-text-dark); font-size: 15px;">Seat ${seatName}</span>
+                        <span style="font-family: var(--font-mono); font-size: 13px; color: var(--bms-crimson); font-weight: 700;">$${singleSeatPrice.toFixed(2)}</span>
+                    </div>
+                    <div style="font-size: 9px; color: var(--bms-text-muted); font-family: var(--font-mono); word-break: break-all;">
+                        ID: ${bookingId}
+                    </div>
+                `;
+                listContainer.appendChild(ticketItem);
+            });
+
+            // Open the modal
+            document.getElementById('ticket-modal-view').style.display = 'flex';
+        }
+
+        // Offers modal controllers
+        function openOffersModal() {
+            document.getElementById('offers-modal-view').style.display = 'flex';
+        }
+        function closeOffersModal() {
+            document.getElementById('offers-modal-view').style.display = 'none';
+        }
+
+        // Gift Cards modal controllers
+        function openGiftCardsModal() {
+            document.getElementById('giftcards-modal-view').style.display = 'flex';
+        }
+        function closeGiftCardsModal() {
+            document.getElementById('giftcards-modal-view').style.display = 'none';
+        }
+
+        // Sparkle Mouse Trail Effect (Tickify Girly Theme)
+        let lastSparkleTime = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastSparkleTime < 45) return; // throttle sparkle spawns for performance
+            lastSparkleTime = now;
+            createSparkle(e.clientX, e.clientY);
+        });
+
+        function createSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'mouse-sparkle';
+            
+            // Cute girly aesthetic symbols
+            const icons = ['🌸', '✨', '💖', '🎀', '🧸', '🍭'];
+            sparkle.innerText = icons[Math.floor(Math.random() * icons.length)];
+            
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
+            
+            // Random sizes & trajectories
+            const size = Math.random() * 8 + 12; // 12px to 20px
+            sparkle.style.fontSize = `${size}px`;
+            
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.random() * 50 + 20;
+            const destX = Math.cos(angle) * distance;
+            const destY = Math.sin(angle) * distance - 30; // float upwards
+            
+            sparkle.style.setProperty('--dest-x', `${destX}px`);
+            sparkle.style.setProperty('--dest-y', `${destY}px`);
+
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                sparkle.remove();
+            }, 800);
+        }
+    </script>
+</body>
+</html>

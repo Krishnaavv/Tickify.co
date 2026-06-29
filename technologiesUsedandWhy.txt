@@ -1,0 +1,60 @@
+🖥️ Backend Technology Stack
+1. Java 21 (JDK 21)
+Why: Enables state-of-the-art concurrency modeling. Specifically, it leverages Virtual Threads (Project Loom) (configured in application.yml), 
+which are lightweight threads that allow the application to process thousands of concurrent checkout connections under ticket rush conditions with minimal OS thread overhead.
+
+2. Spring Boot 3.3.5
+Why: Forms the framework backbone of the decoupled microservices (configured in pom.xml). Offers modular dependency management, embedded web containers, and seamless integrations with message brokers and datastores.
+
+3. Sub-modules:
+Booking-service (booking-service/pom.xml): Coordinates events, venues, seat maps, dynamic pricing, and transactional checkout validations.
+
+Notification-service (notification-service/pom.xml): Processes event-driven alerts asynchronously to dispatch confirmation logs.
+
+4. C-ticket-common (c-ticket-common/pom.xml): Shared maven module maintaining common DTO payloads and serialization schemas to avoid code drift between services.
+
+5. Spring Web (MVC)
+Why: Used to build REST controllers that serve seating data, live pricing, and handle client bookings. It also packages and serves index.html as static content (booking-service/pom.xml#L68-L80).
+
+6. Spring Data Redis & Redisson Starter (3.37.0)
+Why: Integrates Redis with Spring. Redisson provides distributed reentrant locks (RLock via Lua scripts) to achieve seat-level mutual exclusion (DistributedSeatLockService.java). This guarantees that double-booking highly contested seats is blocked instantly at the Redis coordination layer without locking database records.
+
+7. Spring Kafka
+Why: Provides connection abstraction, producer configurations, and consumer polling logic to integrate Spring microservices with the Kafka event pipeline.
+
+8. Lombok (1.18.38)
+Why: Simplifies class definitions by auto-generating getters, setters, builders, and constructor boilerplate code during compilation.
+
+9. Jackson Databind
+Why: Serializes and deserializes payloads to and from JSON formats across REST boundaries and Kafka broker topics.
+
+===========================================================================================
+🗄️Distributed Storage, Messaging, & Infrastructure
+1. Docker & Docker Compose
+Why: Standardizes the execution environment. The docker-compose.yml config orchestrates all dependent services (Redis, Kafka, Prometheus, Grafana) locally with pre-mapped networking and configuration paths.
+
+2. Redis 7.4 (Alpine-based)
+Why: Serves as a high-performance in-memory datastore holding seat coordinate inventory states (RedisSeatRepository.java). It is also utilized for distributed seat locking and storing/polling checkout transaction tokens to support the client-retry idempotency engine (IdempotencyFilter.java).
+
+3. Apache Kafka (Confluent cp-kafka 7.5.0 in KRaft Mode)
+Why: Actively brokers messages for the system's asynchronous Saga Choreography Pattern (reservation.reserved, payment.captured, payment.failed, seat.release.requested). By decoupling services through event logs, Kafka enables eventual transactional consistency and clean compensating rollbacks. Running in KRaft mode simplifies operations by removing Zookeeper.
+
+4. Prometheus (v2.55.0) & Grafana (11.3.0)
+Why: Observability monitoring. Prometheus scrapes JVM and docker metrics, and Grafana hosts dashboards to track active threads, API latency, and queue offsets (configured in prometheus.yml).
+
+===========================================================================================
+🎨 Client-Side Web Application
+1. HTML5 Semantic Markup
+Why: Structures the single-page application layout (index.html), optimizing layout trees for light download footprints and rapid page speeds.
+
+2.Vanilla CSS3 (with Custom Variables)
+Why: Implements custom color tokens, modern glassmorphic overlays, responsive flex layouts, dynamic grid structures (for seat maps), keyframe animations, and styling transitions without loading heavy external libraries.
+
+3. Vanilla JavaScript (ES6+)
+Why: Direct DOM controllers. Renders events, manages local shopping charts, queries live API pricing, executes simulated payment/ticket crashes, displays live monitor streams, and draws aesthetic micro-interactions (like the mouse sparkle trail) with zero framework compilation overhead.
+
+4. Web Storage API (localStorage)
+Why: Persists user profile states, custom avatars, and booking receipts directly inside the browser's storage, allowing clients to load previous tickets offline.
+
+5. Google Fonts Integration (Playfair Display, Inter, Space Grotesk)
+Why: Renders clean, modern, and high-quality typefaces for content layouts, monospaced logs, and terminal outputs.
