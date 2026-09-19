@@ -2203,9 +2203,12 @@
             <button class="drawer-close" onclick="closeCheckoutDrawer()">&times;</button>
         </div>
         <div class="drawer-body">
-            <div>
-                <h4 class="drawer-event-title" id="drawer-title">-</h4>
-                <p class="drawer-event-meta" id="drawer-meta">-</p>
+            <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid var(--bms-border);">
+                <div id="drawer-event-img" style="width: 64px; height: 64px; border-radius: 8px; background-size: cover; background-position: center; flex-shrink: 0; border: 1px solid var(--bms-border); box-shadow: 0 2px 8px rgba(0,0,0,0.1);"></div>
+                <div>
+                    <h4 class="drawer-event-title" id="drawer-title" style="margin: 0; font-size: 16px;">-</h4>
+                    <p class="drawer-event-meta" id="drawer-meta" style="margin-top: 4px; font-size: 12px;">-</p>
+                </div>
             </div>
 
             <div class="price-breakdown">
@@ -2274,9 +2277,12 @@
                 <p style="font-size: 10px; color: var(--bms-text-muted); margin-top: 3px;">SHOW THIS AT THE VENUE GATE</p>
             </div>
             <div class="ticket-body">
-                <div class="ticket-field">
-                    <div class="ticket-label">Concert / Event</div>
-                    <div class="ticket-value" id="ticket-event-val">-</div>
+                <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px dashed var(--bms-border);">
+                    <div id="ticket-event-img" style="width: 64px; height: 64px; border-radius: 8px; background-size: cover; background-position: center; flex-shrink: 0; border: 1px solid var(--bms-border); box-shadow: 0 2px 6px rgba(0,0,0,0.1);"></div>
+                    <div class="ticket-field" style="margin-bottom: 0; flex-grow: 1;">
+                        <div class="ticket-label">Concert / Event</div>
+                        <div class="ticket-value" id="ticket-event-val" style="font-size: 16px; font-weight: 800;">-</div>
+                    </div>
                 </div>
                 
                 <!-- Container for seats booked -->
@@ -2362,7 +2368,14 @@
 
         function getCleanImageUrl(url) {
             if (!url) return '';
-            return url.startsWith('/') ? url.substring(1) : url;
+            const cleanPath = url.startsWith('/') ? url.substring(1) : url;
+            if (window.location.hostname.endsWith('github.io')) {
+                const pathParts = window.location.pathname.split('/');
+                if (pathParts[1] && pathParts[1] !== 'index.html') {
+                    return '/' + pathParts[1] + '/' + cleanPath;
+                }
+            }
+            return cleanPath;
         }
 
         const MOCK_EVENTS = [
@@ -3419,6 +3432,10 @@
 
             document.getElementById('drawer-title').innerText = currentConcert.title;
             document.getElementById('drawer-meta').innerText = `${selectedDateStr} &bull; ${selectedTimeStr}`;
+            const drawerImg = document.getElementById('drawer-event-img');
+            if (drawerImg && currentConcert) {
+                drawerImg.style.backgroundImage = `url('${getCleanImageUrl(currentConcert.imageUrl)}')`;
+            }
             
             calculateCheckoutTotal();
         }
@@ -3872,6 +3889,10 @@
             const totalWithFees = (totalPricePaid - discountAmount) + bookingFee + taxFee + smileDonation;
 
             document.getElementById('ticket-event-val').innerText = currentConcert.title;
+            const tktImg = document.getElementById('ticket-event-img');
+            if (tktImg && currentConcert) {
+                tktImg.style.backgroundImage = `url('${getCleanImageUrl(currentConcert.imageUrl)}')`;
+            }
             
             let cleanCust = firstBooking ? firstBooking.customerId : 'User';
             if (cleanCust.startsWith("fail_payment_")) cleanCust = cleanCust.replace("fail_payment_", "");
@@ -4048,6 +4069,10 @@
 
             // Populate modal fields
             document.getElementById('ticket-event-val').innerText = booking.eventTitle;
+            const tktImg = document.getElementById('ticket-event-img');
+            if (tktImg && booking) {
+                tktImg.style.backgroundImage = `url('${getCleanImageUrl(booking.imageUrl)}')`;
+            }
             
             let cleanCust = booking.customerName || localStorage.getItem('tickify_username') || 'User';
             if (cleanCust.startsWith("fail_payment_")) cleanCust = cleanCust.replace("fail_payment_", "");
